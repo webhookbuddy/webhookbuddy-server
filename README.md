@@ -1,13 +1,11 @@
-# Simple Node Application
+# Webhook Buddy Server
 
-Includes:
-* ES6 Modules
-* Nodemon
-* Typescript
-* Express
-* Debug support in VS Code
+## Setup
 
-Inspired by: https://medium.com/create-a-server-with-nodemon-express-typescript/create-a-server-with-nodemon-express-typescript-f7c88fb5ee71
+### Postgres
+* `docker pull postgres`
+* `docker run --name postgres_webhook_buddy -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=docker -e POSTGRES_DB=webhook_buddy -d -p 5432:5432 postgres`
+* attach and use psql: `docker exec -it postgres_webhook_buddy psql -h localhost -U postgres -d webhook_buddy`
 
 ## Start
 ```

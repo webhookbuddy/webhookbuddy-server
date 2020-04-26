@@ -1,8 +1,11 @@
+import 'dotenv/config';
 import * as express from 'express';
 const app = express();
 
 app.get('/', (req, res) => {
-  res.send('Hello World');
+  res.send(
+    `Hi, process.env.SOME_ENV_VARIABLE is ${process.env.SOME_ENV_VARIABLE}`,
+  );
 });
 
 const PORT = process.env.PORT || 8000;

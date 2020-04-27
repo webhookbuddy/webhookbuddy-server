@@ -1,12 +1,17 @@
 import 'dotenv/config';
 import * as express from 'express';
 import * as bodyParser from 'body-parser';
-import subdomainMiddleware from './middlewares/subdomainMiddleware';
 import processWebhook from './services/processWebhook';
-const app = express();
 
+const app = express();
 app.use(bodyParser.text({ type: '*/*' }));
-app.use(subdomainMiddleware);
+
+app.all('*', (req, res, next) => {
+  if (req.subdomains.length === 1 && req.subdomains[0] === 'point')
+    req.url = `/point${req.url}`;
+
+  next();
+});
 
 app.all('/point/*', async (req, res) => {
   try {

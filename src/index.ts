@@ -1,16 +1,43 @@
 import 'dotenv/config';
 import * as express from 'express';
+import * as bodyParser from 'body-parser';
 import subdomainMiddleware from './middlewares/subdomainMiddleware';
+import processWebhook from './services/processWebhook';
 const app = express();
 
+app.use(bodyParser.text({ type: '*/*' }));
 app.use(subdomainMiddleware);
 
-app.all('/point/*', (req, res) => {
-  res.json({
-    url: req.url,
-    method: req.method,
-    route: req.params[0],
-  });
+app.all('/point/*', async (req, res) => {
+  try {
+    const body =
+      Object.keys(req.body).length === 0 &&
+      req.body.constructor === Object
+        ? null
+        : req.body;
+
+    // bodyParser sets req.body to an empty object if there's no body
+    await processWebhook({
+      referenceId: req.params[0],
+      ipAddress: (
+        <string>req.headers['x-forwarded-for'] ||
+        req.connection.remoteAddress ||
+        ''
+      )
+        .split(',')[0]
+        .trim(),
+      method: req.method,
+      contentType: req.headers['content-type'],
+      headers: req.headers,
+      query: req.query,
+      body: typeof req.body === 'string' ? req.body : null, // Note: won't work if string is constructed from new String(): https://stackoverflow.com/a/4059166/188740
+    });
+    res.status(204).send(undefined);
+  } catch (error) {
+    res
+      .status(400)
+      .json((({ message, code }) => ({ message, code }))(error));
+  }
 });
 
 app.get('/', (req, res) => {

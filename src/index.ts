@@ -1,13 +1,9 @@
 import 'dotenv/config';
 import * as express from 'express';
+import subdomainMiddleware from './middlewares/subdomainMiddleware';
 const app = express();
 
-app.all('*', (req, res, next) => {
-  if (req.subdomains.length === 1 && req.subdomains[0] === 'point')
-    req.url = `/point${req.url}`;
-
-  next();
-});
+app.use(subdomainMiddleware);
 
 app.all('/point/*', (req, res) => {
   res.json({

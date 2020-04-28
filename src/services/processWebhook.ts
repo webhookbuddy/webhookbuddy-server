@@ -1,10 +1,11 @@
 import db from '../db';
 
-const tryParseJson = (json: string) => {
+const isJSON = (json: string) => {
   try {
-    return JSON.parse(json);
+    JSON.parse(json);
+    return true;
   } catch (error) {
-    return null;
+    return false;
   }
 };
 
@@ -46,7 +47,7 @@ const processWebhook = async ({
     VALUES
       (current_timestamp, current_timestamp, $1, $2, $3, $4, $5, $6, $7, $8)
     RETURNING *
-  `,
+    `,
     [
       endpoints[0].id,
       ipAddress,
@@ -55,7 +56,7 @@ const processWebhook = async ({
       headers,
       query,
       body,
-      mediaType === 'application/json' ? tryParseJson(body) : null,
+      mediaType === 'application/json' && isJSON(body) ? body : null, // Don't JSON.parse() before inserting, as that'll throw an exception for JSON arrays: https://github.com/brianc/node-postgres/issues/442
     ],
   );
 

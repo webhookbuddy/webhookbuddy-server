@@ -1,9 +1,22 @@
 import 'dotenv/config';
 import * as express from 'express';
 import * as bodyParser from 'body-parser';
+import { ApolloServer } from 'apollo-server-express';
+import schema from './schema';
+import resolvers from './resolvers';
 import processWebhook from './services/processWebhook';
 
 const app = express();
+
+const server = new ApolloServer({
+  introspection: true, // enable for Heroku
+  playground: true, // enable in Heroku
+  typeDefs: schema,
+  resolvers,
+});
+server.applyMiddleware({ app, path: '/graphql' });
+
+// make sure bodyParser gets registered as middleware after graphql
 app.use(bodyParser.text({ type: '*/*' }));
 
 app.all('*', (req, res, next) => {

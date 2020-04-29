@@ -33,7 +33,7 @@ const processWebhook = async ({
     [referenceId],
   );
 
-  if (endpoints.length === 0) throw Error(`Endpoint not found.`);
+  if (endpoints.length === 0) throw new Error(`Endpoint not found.`);
 
   const parts = contentType
     .split(';')

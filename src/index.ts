@@ -4,6 +4,7 @@ import * as bodyParser from 'body-parser';
 import { ApolloServer } from 'apollo-server-express';
 import schema from './schema';
 import resolvers from './resolvers';
+import ipAddress from './services/ipAddress';
 import processWebhook from './services/processWebhook';
 
 const app = express();
@@ -31,13 +32,7 @@ app.all('/point/*', async (req, res) => {
     // bodyParser sets req.body to an empty object if there's no body
     await processWebhook({
       referenceId: req.params[0],
-      ipAddress: (
-        <string>req.headers['x-forwarded-for'] ||
-        req.connection.remoteAddress ||
-        ''
-      )
-        .split(',')[0]
-        .trim(),
+      ipAddress: ipAddress(req),
       method: req.method,
       contentType: req.headers['content-type'],
       headers: req.headers,

@@ -14,6 +14,7 @@
   DATABASE_HOST=localhost
   DATABASE_PORT=5432
   ```
+* Scaffold the database by executing the SQL scripts in `db.sql`
 
 ## Start
 ```

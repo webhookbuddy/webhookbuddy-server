@@ -11,6 +11,7 @@ Add these to `.env`
   DATABASE_PASSWORD=docker
   DATABASE_HOST=localhost
   DATABASE_PORT=5432
+  JWT_SECRET={todo}
   ```
 
 ### Postgres

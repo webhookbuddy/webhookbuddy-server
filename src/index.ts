@@ -14,6 +14,10 @@ const server = new ApolloServer({
   playground: true, // enable in Heroku
   typeDefs: schema,
   resolvers,
+  context: async ({ req }) => ({
+    ipAddress: ipAddress(req),
+    jwtSecret: process.env.JWT_SECRET,
+  }),
 });
 server.applyMiddleware({ app, path: '/graphql' });
 

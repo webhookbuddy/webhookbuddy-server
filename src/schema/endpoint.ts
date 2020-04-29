@@ -7,8 +7,8 @@ export default gql`
   }
 
   extend type Mutation {
-    createEndpoint(input: CreateEndpointInput): Endpoint!
-    deleteEndpoint(input: DeleteEndpointInput): Boolean!
+    createEndpoint(input: CreateEndpointInput): CreateEndpointPayload!
+    deleteEndpoint(input: DeleteEndpointInput): DeleteEndpointPayload!
   }
 
   type Endpoint {
@@ -27,7 +27,15 @@ export default gql`
     name: String!
   }
 
+  type CreateEndpointPayload {
+    endpoint: Endpoint!
+  }
+
   input DeleteEndpointInput {
     id: ID!
+  }
+
+  type DeleteEndpointPayload {
+    affectedRows: Int!
   }
 `;

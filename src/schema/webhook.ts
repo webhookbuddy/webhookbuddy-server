@@ -7,8 +7,8 @@ export default gql`
   }
 
   extend type Mutation {
-    readWebhook(input: ReadWebhookInput!): Webhook!
-    deleteWebhook(input: DeleteWebhookInput!): Boolean!
+    readWebhook(input: ReadWebhookInput!): ReadWebhookPayload!
+    deleteWebhook(input: DeleteWebhookInput!): DeleteWebhookPayload!
   }
 
   type Webhook {
@@ -49,7 +49,15 @@ export default gql`
     id: Int!
   }
 
+  type ReadWebhookPayload {
+    webhook: Webhook!
+  }
+
   input DeleteWebhookInput {
     id: ID!
+  }
+
+  type DeleteWebhookPayload {
+    affectedRows: Int!
   }
 `;

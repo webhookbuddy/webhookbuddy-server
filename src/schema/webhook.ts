@@ -14,7 +14,6 @@ export default gql`
   type Webhook {
     id: ID!
     createdAt: DateTime!
-    updatedAt: DateTime!
     ipAddress: String!
     method: String!
     headers: [KeyValue!]!
@@ -32,7 +31,6 @@ export default gql`
   type Forward {
     id: ID!
     createdAt: DateTime!
-    updatedAt: DateTime!
     url: String!
     method: String!
     statusCode: Int!

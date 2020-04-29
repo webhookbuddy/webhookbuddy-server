@@ -14,7 +14,6 @@ export default gql`
   type Endpoint {
     id: ID!
     createdAt: DateTime!
-    updatedAt: DateTime!
     referenceId: String!
     name: String!
     forwardUrls: [ForwardUrl!]!

@@ -28,12 +28,6 @@ app.all('*', (req, res, next) => {
 
 app.all('/point/*', async (req, res) => {
   try {
-    const body =
-      Object.keys(req.body).length === 0 &&
-      req.body.constructor === Object
-        ? null
-        : req.body;
-
     // bodyParser sets req.body to an empty object if there's no body
     await processWebhook({
       referenceId: req.params[0],

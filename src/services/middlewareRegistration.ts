@@ -4,6 +4,7 @@ import {
   IResolvers,
 } from 'graphql-tools';
 import { applyMiddleware } from 'graphql-middleware';
+import { yupMiddleware } from 'graphql-yup-middleware';
 
 export const schemaWithMiddleware = (
   typeDefs: ITypeDefinitions,
@@ -14,4 +15,5 @@ export const schemaWithMiddleware = (
       typeDefs,
       resolvers,
     }),
+    yupMiddleware(),
   );

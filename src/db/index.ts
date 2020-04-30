@@ -12,3 +12,25 @@ export const query = (
   text: string | QueryConfig<any>,
   params?: Array<any>,
 ) => pool.query(text, params);
+
+export const many = async (
+  text: string | QueryConfig<any>,
+  params?: Array<any>,
+) => {
+  const { rows } = await query(text, params);
+  return rows;
+};
+
+export const first = async (
+  text: string | QueryConfig<any>,
+  params?: Array<any>,
+) => {
+  const rows = await many(text, params);
+  if (rows.length) return rows[0];
+  else return null;
+};
+
+export const any = async (
+  text: string | QueryConfig<any>,
+  params?: Array<any>,
+) => (await many(text, params)).length > 0;

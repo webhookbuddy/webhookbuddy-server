@@ -37,7 +37,7 @@ TABLESPACE pg_default;
 CREATE TABLE public.user_endpoints
 (
     user_id integer NOT NULL REFERENCES public.users (id) ON UPDATE CASCADE ON DELETE CASCADE,
-    endpoint_id integer NOT NULL REFERENCES public.users (id) ON UPDATE CASCADE ON DELETE CASCADE,
+    endpoint_id integer NOT NULL REFERENCES public.endpoints (id) ON UPDATE CASCADE ON DELETE CASCADE,
     created_at timestamp with time zone NOT NULL,
     CONSTRAINT user_endpoints_pkey PRIMARY KEY (user_id, endpoint_id)
 )

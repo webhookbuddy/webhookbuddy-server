@@ -7,18 +7,12 @@ describe('processWebhook', () => {
   it('should return newly created webhook', async () => {
     const processWebhook = proxyquire('./processWebhook', {
       '../db': {
-        default: {
-          query: (
-            text: string | QueryConfig<any>,
-            params?: Array<any>,
-          ) => ({
-            rows: [
-              {
-                id: 1,
-              },
-            ],
-          }),
-        },
+        single: (
+          text: string | QueryConfig<any>,
+          params?: Array<any>,
+        ) => ({
+          id: 1,
+        }),
       },
     }).default;
 

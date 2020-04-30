@@ -20,6 +20,11 @@ const server = new ApolloServer({
   introspection: true, // enable for Heroku
   playground: true, // enable in Heroku
   schema: schemaWithMiddleware(schema, resolvers),
+  formatError: error => ({
+    // If an exception is thrown during context creation, 'Context creation failed: ' is prepended to the error message.
+    ...error,
+    message: error.message.replace('Context creation failed: ', ''),
+  }),
   context: async ({ req }) => ({
     me: await getMe(req, ipAddress(req)),
     ipAddress: ipAddress(req),

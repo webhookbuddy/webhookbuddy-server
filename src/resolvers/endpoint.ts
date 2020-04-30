@@ -1,4 +1,4 @@
-import { findById } from '../models/endpoint';
+import { findById, findByUserId } from '../models/endpoint';
 import { findByUserEndpoint } from '../models/forwardUrls';
 import { isAuthenticated, isEndpointAllowed } from './authorization';
 import { combineResolvers } from 'graphql-resolvers';
@@ -9,6 +9,10 @@ export default {
       isAuthenticated,
       isEndpointAllowed,
       async (_, { id }) => await findById(id),
+    ),
+    endpoints: combineResolvers(
+      isAuthenticated,
+      async (_, __, { me }) => await findByUserId(me.id),
     ),
   },
 

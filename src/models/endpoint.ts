@@ -1,4 +1,4 @@
-import { single, any } from '../db';
+import { single, any, many } from '../db';
 
 export type Endpoint = {
   id: number;
@@ -28,6 +28,19 @@ export const findByReferenceId = async (referenceId: string) =>
       referenceId,
     ]),
   );
+
+export const findByUserId = async (userId: number) =>
+  (
+    await many(
+      `
+      SELECT e.*
+      FROM endpoints as e
+      INNER JOIN user_endpoints as ue on ue.endpoint_id = e.id
+      WHERE ue.user_id = $1
+    `,
+      [userId],
+    )
+  ).map(e => map(e));
 
 export const isUserEndpoint = async (
   userId: number,

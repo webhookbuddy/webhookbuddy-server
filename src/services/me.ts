@@ -29,10 +29,13 @@ export const getMe = async (
 
     await db.query(
       `
-      UPDATE users
-      SET last_ip_address = $1, last_activity_at = current_timestamp
-      WHERE id = $2;
-    `,
+        UPDATE users
+        SET
+          last_activity_at = current_timestamp,
+          activity_count = activity_count + 1,
+          last_ip_address = $1
+        WHERE id = $2;
+      `,
       [ipAddress, id],
     );
 

@@ -10,10 +10,11 @@ CREATE TABLE public.users
     email citext COLLATE pg_catalog."default",
     password_hash character varying(1024) COLLATE pg_catalog."default",
     password_salt character varying(32) COLLATE pg_catalog."default",
-    last_ip_address character varying(39) COLLATE pg_catalog."default",
-    login_count integer NOT NULL DEFAULT 0,
     last_logged_in_at timestamp with time zone,
+    login_count integer NOT NULL DEFAULT 0,
     last_activity_at timestamp with time zone,
+    activity_count integer NOT NULL DEFAULT 0,
+    last_ip_address character varying(39) COLLATE pg_catalog."default",
     CONSTRAINT users_pkey PRIMARY KEY (id)
 )
 TABLESPACE pg_default;

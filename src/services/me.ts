@@ -1,7 +1,7 @@
 import { Request } from 'express';
 import { AuthenticationError } from 'apollo-server';
 import { verifyToken } from './authentication';
-import { query } from '../db';
+import { query, single } from '../db';
 import { User } from '../types';
 
 export const getMe = async (
@@ -16,7 +16,7 @@ export const getMe = async (
       token,
       process.env.JWT_SECRET,
     )) as any;
-    const { rows } = await query(
+    const user = await single(
       `
         SELECT id, created_at, updated_at, first_name, last_name, email
         FROM users
@@ -25,7 +25,7 @@ export const getMe = async (
       [id],
     );
 
-    if (!rows.length) throw new Error();
+    if (!user) throw new Error('User was deleted.');
 
     await query(
       `
@@ -40,12 +40,12 @@ export const getMe = async (
     );
 
     return {
-      id: rows[0].id,
-      createdAt: rows[0].created_at,
-      updatedAt: rows[0].updated_at,
-      firstName: rows[0].first_name,
-      lastName: rows[0].last_name,
-      email: rows[0].email,
+      id: user.id,
+      createdAt: user.created_at,
+      updatedAt: user.updated_at,
+      firstName: user.first_name,
+      lastName: user.last_name,
+      email: user.email,
     };
   } catch (e) {
     throw new AuthenticationError('Session expired.');

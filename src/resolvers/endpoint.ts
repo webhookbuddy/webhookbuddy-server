@@ -1,4 +1,4 @@
-import { query } from '../db';
+import { single, many } from '../db';
 import { isAuthenticated, isEndpointAllowed } from './authorization';
 import { combineResolvers } from 'graphql-resolvers';
 
@@ -8,7 +8,7 @@ export default {
       isAuthenticated,
       isEndpointAllowed,
       async (_, { id }) => {
-        const { rows } = await query(
+        const endpoint = await single(
           `
             SELECT id, created_at, reference_id, name
             FROM endpoints
@@ -18,10 +18,10 @@ export default {
         );
 
         return {
-          id: rows[0].id,
-          createdAt: rows[0].created_at,
-          referenceId: rows[0].reference_id,
-          name: rows[0].name,
+          id: endpoint.id,
+          createdAt: endpoint.created_at,
+          referenceId: endpoint.reference_id,
+          name: endpoint.name,
         };
       },
     ),
@@ -30,20 +30,24 @@ export default {
   Mutation: {},
 
   Endpoint: {
-    forwardUrls: async (endpoint, _, { me }) => {
-      const { rows } = await query(
-        `
-          SELECT id, url
-          FROM forward_urls
-          WHERE 
-            endpoint_id = $1
-            AND 
-            user_id = $2
-        `,
-        [endpoint.id, me.id],
-      );
-
-      return rows;
-    },
+    forwardUrls: async (endpoint, _, { me }) =>
+      (
+        await many(
+          `
+            SELECT id, url
+            FROM forward_urls
+            WHERE 
+              endpoint_id = $1
+              AND 
+              user_id = $2
+          `,
+          [endpoint.id, me.id],
+        )
+      ).map(e => ({
+        id: e.id,
+        createdAt: e.created_at,
+        referenceId: e.reference_id,
+        name: e.name,
+      })),
   },
 };

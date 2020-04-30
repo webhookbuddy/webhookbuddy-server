@@ -1,4 +1,4 @@
-import { query as dbQuery } from '../db';
+import { single } from '../db';
 
 const isJSON = (json: string) => {
   try {
@@ -26,30 +26,28 @@ const processWebhook = async ({
   query: object;
   body: string;
 }) => {
-  const {
-    rows: endpoints,
-  } = await dbQuery(
+  const endpoint = await single(
     'SELECT id FROM endpoints WHERE reference_id = $1',
     [referenceId],
   );
 
-  if (endpoints.length === 0) throw new Error(`Endpoint not found.`);
+  if (!endpoint) throw new Error(`Endpoint not found.`);
 
   const parts = contentType
     .split(';')
     .map(s => s.trim().toLowerCase());
   const mediaType = parts.length > 0 ? parts[0] : null;
 
-  const { rows: webhooks } = await dbQuery(
+  const webhook = await single(
     `
-    INSERT INTO webhooks
-      (created_at, updated_at, endpoint_id, ip_address, method, content_type, headers, query, body, body_json)
-    VALUES
-      (current_timestamp, current_timestamp, $1, $2, $3, $4, $5, $6, $7, $8)
-    RETURNING *
+      INSERT INTO webhooks
+        (created_at, endpoint_id, ip_address, method, content_type, headers, query, body, body_json)
+      VALUES
+        (current_timestamp, $1, $2, $3, $4, $5, $6, $7, $8)
+      RETURNING *
     `,
     [
-      endpoints[0].id,
+      endpoint.id,
       ipAddress,
       method,
       mediaType,
@@ -60,10 +58,9 @@ const processWebhook = async ({
     ],
   );
 
-  if (webhooks.length === 0)
-    throw new Error('Error processing webhook.');
-
-  return webhooks[0];
+  return {
+    id: webhook.id,
+  };
 };
 
 export default processWebhook;

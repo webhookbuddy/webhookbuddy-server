@@ -1,4 +1,4 @@
-import { query } from '../db';
+import { query, any, single } from '../db';
 import * as yup from 'yup';
 import { UserInputError } from 'apollo-server';
 import { combineResolvers } from 'graphql-resolvers';
@@ -58,18 +58,16 @@ export default {
         { input }: { input: RegisterInput },
         { ipAddress }: { ipAddress: string },
       ) => {
-        const {
-          rows: existingUsers,
-        } = await query('SELECT id FROM users WHERE email = $1', [
-          input.email,
-        ]);
-
-        if (existingUsers.length)
+        if (
+          await any('SELECT id FROM users WHERE email = $1', [
+            input.email,
+          ])
+        )
           throw new Error('Email is already registered.');
 
         const hash = hashPassword(input.password);
 
-        const { rows: newUsers } = await query(
+        const user = await single(
           `
             INSERT INTO users
             (
@@ -113,19 +111,16 @@ export default {
           ],
         );
 
-        if (newUsers.length === 0)
-          throw new Error('Error creating user.');
-
-        const newUser = newUsers[0];
         return {
           token: createToken(
-            { id: newUser.id },
+            { id: user.id },
             process.env.JWT_SECRET,
             '60d',
           ),
         };
       },
     },
+
     login: {
       validationSchema: yup.object().shape({
         input: yup.object().shape({
@@ -141,22 +136,22 @@ export default {
         { input }: { input: LoginInput },
         { ipAddress }: { ipAddress: string },
       ) => {
-        const { rows } = await query(
+        const user = await single(
           `
-          SELECT id, password_hash, password_salt
-          FROM users
-          WHERE email = $1
-        `,
+            SELECT id, password_hash, password_salt
+            FROM users
+            WHERE email = $1
+          `,
           [input.email],
         );
 
-        if (!rows.length) throw new UserInputError('Invalid login.');
+        if (!user) throw new UserInputError('Invalid login.');
 
         if (
           !verifyPassword(
             input.password,
-            rows[0].password_hash,
-            rows[0].password_salt,
+            user.password_hash,
+            user.password_salt,
           )
         )
           throw new UserInputError('Invalid login.');
@@ -172,12 +167,12 @@ export default {
               last_ip_address = $1
             WHERE id = $2
           `,
-          [ipAddress, rows[0].id],
+          [ipAddress, user.id],
         );
 
         return {
           token: createToken(
-            { id: rows[0].id },
+            { id: user.id },
             process.env.JWT_SECRET,
             '60d',
           ),

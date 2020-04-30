@@ -1,14 +1,5 @@
-import { single } from '../db';
 import { findByReferenceId } from '../models/endpoint';
-
-const isJSON = (json: string) => {
-  try {
-    JSON.parse(json);
-    return true;
-  } catch (error) {
-    return false;
-  }
-};
+import { insert } from '../models/webhook';
 
 const processWebhook = async ({
   referenceId,
@@ -35,24 +26,14 @@ const processWebhook = async ({
     .map(s => s.trim().toLowerCase());
   const mediaType = parts.length > 0 ? parts[0] : null;
 
-  const webhook = await single(
-    `
-      INSERT INTO webhooks
-        (created_at, endpoint_id, ip_address, method, content_type, headers, query, body, body_json)
-      VALUES
-        (current_timestamp, $1, $2, $3, $4, $5, $6, $7, $8)
-      RETURNING *
-    `,
-    [
-      endpoint.id,
-      ipAddress,
-      method,
-      mediaType,
-      headers,
-      query,
-      body,
-      mediaType === 'application/json' && isJSON(body) ? body : null, // Don't JSON.parse() before inserting, as that'll throw an exception for JSON arrays: https://github.com/brianc/node-postgres/issues/442
-    ],
+  const webhook = await insert(
+    endpoint.id,
+    ipAddress,
+    method,
+    headers,
+    query,
+    mediaType,
+    body,
   );
 
   return {

@@ -4,6 +4,7 @@ import * as bodyParser from 'body-parser';
 import { ApolloServer } from 'apollo-server-express';
 import schema from './schema';
 import resolvers from './resolvers';
+import { schemaWithMiddleware } from './services/middlewareRegistration';
 import ipAddress from './services/ipAddress';
 import processWebhook from './services/processWebhook';
 
@@ -12,8 +13,7 @@ const app = express();
 const server = new ApolloServer({
   introspection: true, // enable for Heroku
   playground: true, // enable in Heroku
-  typeDefs: schema,
-  resolvers,
+  schema: schemaWithMiddleware(schema, resolvers),
   context: async ({ req }) => ({
     ipAddress: ipAddress(req),
     jwtSecret: process.env.JWT_SECRET,

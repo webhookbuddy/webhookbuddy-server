@@ -1,15 +1,23 @@
 import db from '../db';
 import * as yup from 'yup';
-import { ForbiddenError } from 'apollo-server-express';
+import {
+  ForbiddenError,
+  UserInputError,
+} from 'apollo-server-express';
 import { combineResolvers } from 'graphql-resolvers';
 import { isAuthenticated } from './authorization';
-import { hashPassword } from '../services/password';
+import { hashPassword, verifyPassword } from '../services/password';
 import { createToken } from '../services/authentication';
 import { Me } from '../types';
 
 type RegisterInput = {
   firstName: string;
   lastName: string;
+  email: string;
+  password: string;
+};
+
+type LoginInput = {
   email: string;
   password: string;
 };
@@ -122,6 +130,59 @@ export default {
         return {
           token: createToken(
             { id: newUser.id },
+            process.env.JWT_SECRET,
+            '60d',
+          ),
+        };
+      },
+    },
+    login: {
+      validationSchema: yup.object().shape({
+        input: yup.object().shape({
+          email: yup.string().trim().required('Email is required'),
+          password: yup
+            .string()
+            .trim()
+            .required('Password is required'),
+        }),
+      }),
+      resolve: async (
+        _,
+        { input }: { input: LoginInput },
+        { ipAddress }: { ipAddress: string },
+      ) => {
+        const { rows } = await db.query(
+          `
+          SELECT id, password_hash, password_salt
+          FROM users
+          WHERE email = $1
+        `,
+          [input.email],
+        );
+
+        if (!rows.length) throw new UserInputError('Invalid login.');
+
+        if (
+          !verifyPassword(
+            input.password,
+            rows[0].password_hash,
+            rows[0].password_salt,
+          )
+        )
+          throw new UserInputError('Invalid login.');
+
+        await db.query(
+          `
+            UPDATE users
+            SET last_ip_address = $1, login_count = login_count + 1, last_logged_in_at = current_timestamp, last_activity_at = current_timestamp
+            WHERE id = $2
+          `,
+          [ipAddress, rows[0].id],
+        );
+
+        return {
+          token: createToken(
+            { id: rows[0].id },
             process.env.JWT_SECRET,
             '60d',
           ),

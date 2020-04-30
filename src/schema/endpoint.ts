@@ -7,8 +7,13 @@ export default gql`
   }
 
   extend type Mutation {
-    createEndpoint(input: CreateEndpointInput): CreateEndpointPayload!
-    deleteEndpoint(input: DeleteEndpointInput): DeleteEndpointPayload!
+    createEndpoint(
+      input: CreateEndpointInput!
+    ): CreateEndpointPayload!
+    deleteEndpoint(
+      input: DeleteEndpointInput!
+    ): DeleteEndpointPayload!
+    addForwardUrl(input: AddForwardUrlInput!): AddForwardUrlPayload!
   }
 
   type Endpoint {
@@ -20,6 +25,7 @@ export default gql`
   }
 
   type ForwardUrl {
+    id: ID!
     url: String!
   }
 
@@ -37,5 +43,13 @@ export default gql`
 
   type DeleteEndpointPayload {
     affectedRows: Int!
+  }
+
+  input AddForwardUrlInput {
+    url: String!
+  }
+
+  type AddForwardUrlPayload {
+    forwardUrl: ForwardUrl!
   }
 `;

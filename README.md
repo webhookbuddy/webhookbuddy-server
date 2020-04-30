@@ -32,7 +32,7 @@ npm run start:watch
 ## Debug in VS Code
 <kbd>F5</kbd>
 
-It may take several attempts with breakpoints near the top of `src/index.ts` to get VS Code to start in debug mode, but be persistent. Keep trying!
+It may take several attempts with breakpoints near the top of `src/index.ts` with the cursor active at that breakpoint to get VS Code to start in debug mode, but be persistent. Keep trying!
 
 _Note: Nodemon isn't included in debug mode, so stop/start is required to reflect code changes._
 

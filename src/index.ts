@@ -6,6 +6,8 @@ import { ApolloServer } from 'apollo-server-express';
 import schema from './schema';
 import resolvers from './resolvers';
 import { schemaWithMiddleware } from './services/middlewareRegistration';
+import * as DataLoader from 'dataloader';
+import { findByKeys as findForwardUrlsByKeys } from './models/forwardUrls';
 import ipAddress from './services/ipAddress';
 import processWebhook from './services/processWebhook';
 import { getMe } from './services/me';
@@ -29,6 +31,15 @@ const server = new ApolloServer({
     me: await getMe(req, ipAddress(req)),
     ipAddress: ipAddress(req),
     jwtSecret: process.env.JWT_SECRET,
+    loaders: {
+      forwardUrl: new DataLoader(
+        (keys: { userId: number; endpointId: number }[]) =>
+          findForwardUrlsByKeys(keys),
+        {
+          cacheKeyFn: key => `${key.userId}-${key.endpointId}`,
+        },
+      ),
+    },
   }),
 });
 server.applyMiddleware({ app, path: '/graphql' });

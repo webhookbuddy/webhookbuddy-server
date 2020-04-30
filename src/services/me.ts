@@ -1,7 +1,7 @@
 import { Request } from 'express';
 import { AuthenticationError } from 'apollo-server';
 import { verifyToken } from './authentication';
-import db from '../db';
+import { query } from '../db';
 import { User } from '../types';
 
 export const getMe = async (
@@ -16,7 +16,7 @@ export const getMe = async (
       token,
       process.env.JWT_SECRET,
     )) as any;
-    const { rows } = await db.query(
+    const { rows } = await query(
       `
         SELECT id, created_at, updated_at, first_name, last_name, email
         FROM users
@@ -27,7 +27,7 @@ export const getMe = async (
 
     if (!rows.length) throw new Error();
 
-    await db.query(
+    await query(
       `
         UPDATE users
         SET

@@ -1,4 +1,4 @@
-import db from '../db';
+import { query } from '../db';
 import * as yup from 'yup';
 import { UserInputError } from 'apollo-server';
 import { combineResolvers } from 'graphql-resolvers';
@@ -60,7 +60,7 @@ export default {
       ) => {
         const {
           rows: existingUsers,
-        } = await db.query('SELECT id FROM users WHERE email = $1', [
+        } = await query('SELECT id FROM users WHERE email = $1', [
           input.email,
         ]);
 
@@ -69,7 +69,7 @@ export default {
 
         const hash = hashPassword(input.password);
 
-        const { rows: newUsers } = await db.query(
+        const { rows: newUsers } = await query(
           `
             INSERT INTO users
             (
@@ -141,7 +141,7 @@ export default {
         { input }: { input: LoginInput },
         { ipAddress }: { ipAddress: string },
       ) => {
-        const { rows } = await db.query(
+        const { rows } = await query(
           `
           SELECT id, password_hash, password_salt
           FROM users
@@ -161,7 +161,7 @@ export default {
         )
           throw new UserInputError('Invalid login.');
 
-        await db.query(
+        await query(
           `
             UPDATE users
             SET

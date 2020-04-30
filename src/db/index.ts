@@ -8,7 +8,7 @@ export const pool = new Pool({
   port: parseInt(process.env.DATABASE_PORT, 10),
 });
 
-export default {
-  query: (text: string | QueryConfig<any>, params?: Array<any>) =>
-    pool.query(text, params),
-};
+export const query = (
+  text: string | QueryConfig<any>,
+  params?: Array<any>,
+) => pool.query(text, params);

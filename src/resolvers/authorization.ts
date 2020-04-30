@@ -1,13 +1,13 @@
 import { ForbiddenError } from 'apollo-server';
 import { skip } from 'graphql-resolvers';
-import db from '../db';
+import { query } from '../db';
 import { User } from '../types';
 
 export const isAuthenticated = (_, __, { me }: { me: User }) =>
   me ? skip : new ForbiddenError('Not authenticated.');
 
 export const isEndpointAllowed = async (_, { id }, { me }) => {
-  const { rows } = await db.query(
+  const { rows } = await query(
     `
       SELECT e.id
       FROM endpoints as e

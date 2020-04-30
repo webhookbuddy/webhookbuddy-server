@@ -1,4 +1,4 @@
-import db from '../db';
+import { query } from '../db';
 import { isAuthenticated, isEndpointAllowed } from './authorization';
 import { combineResolvers } from 'graphql-resolvers';
 
@@ -8,7 +8,7 @@ export default {
       isAuthenticated,
       isEndpointAllowed,
       async (_, { id }) => {
-        const { rows } = await db.query(
+        const { rows } = await query(
           `
             SELECT id, created_at, reference_id, name
             FROM endpoints
@@ -31,7 +31,7 @@ export default {
 
   Endpoint: {
     forwardUrls: async (endpoint, _, { me }) => {
-      const { rows } = await db.query(
+      const { rows } = await query(
         `
           SELECT id, url
           FROM forward_urls

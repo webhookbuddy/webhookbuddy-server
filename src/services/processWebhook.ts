@@ -1,4 +1,4 @@
-import db from '../db';
+import { query as dbQuery } from '../db';
 
 const isJSON = (json: string) => {
   try {
@@ -28,7 +28,7 @@ const processWebhook = async ({
 }) => {
   const {
     rows: endpoints,
-  } = await db.query(
+  } = await dbQuery(
     'SELECT id FROM endpoints WHERE reference_id = $1',
     [referenceId],
   );
@@ -40,7 +40,7 @@ const processWebhook = async ({
     .map(s => s.trim().toLowerCase());
   const mediaType = parts.length > 0 ? parts[0] : null;
 
-  const { rows: webhooks } = await db.query(
+  const { rows: webhooks } = await dbQuery(
     `
     INSERT INTO webhooks
       (created_at, updated_at, endpoint_id, ip_address, method, content_type, headers, query, body, body_json)

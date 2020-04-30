@@ -58,7 +58,7 @@ export default {
         ]);
 
         if (existingUsers.length)
-          throw new Error('Email already registered.');
+          throw new Error('Email is already registered.');
 
         const hash = hashPassword(input.password);
 

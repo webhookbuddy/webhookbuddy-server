@@ -1,4 +1,5 @@
 import 'dotenv/config';
+import { migrateDB } from './db/migration';
 import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import { ApolloServer } from 'apollo-server-express';
@@ -8,6 +9,10 @@ import { schemaWithMiddleware } from './services/middlewareRegistration';
 import ipAddress from './services/ipAddress';
 import processWebhook from './services/processWebhook';
 import { getMe } from './services/me';
+
+(async function () {
+  await migrateDB();
+})();
 
 const app = express();
 

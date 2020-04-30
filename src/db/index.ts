@@ -1,6 +1,6 @@
 import { Pool, QueryConfig } from 'pg';
 
-const pool = new Pool({
+export const pool = new Pool({
   database: process.env.DATABASE,
   user: process.env.DATABASE_USER,
   password: process.env.DATABASE_PASSWORD,

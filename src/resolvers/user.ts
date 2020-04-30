@@ -1,8 +1,11 @@
 import db from '../db';
 import * as yup from 'yup';
-import { AuthenticationError } from 'apollo-server-express';
+import { ForbiddenError } from 'apollo-server-express';
+import { combineResolvers } from 'graphql-resolvers';
+import { isAuthenticated } from './authorization';
 import { hashPassword } from '../services/password';
 import { createToken } from '../services/authentication';
+import { Me } from '../types';
 
 type RegisterInput = {
   firstName: string;
@@ -13,39 +16,43 @@ type RegisterInput = {
 
 export default {
   Query: {
-    me: async (_, __, { me, ipAddress }) => {
-      if (!me) throw new AuthenticationError('Not authenticated.');
-
-      const { rows } = await db.query(
-        `
+    me: combineResolvers(
+      isAuthenticated,
+      async (
+        _,
+        __,
+        { me, ipAddress }: { me: Me; ipAddress: string },
+      ) => {
+        const { rows } = await db.query(
+          `
         SELECT id, created_at, updated_at, first_name, last_name, email
         FROM users
         WHERE id = $1
       `,
-        [me.id],
-      );
+          [me.id],
+        );
 
-      if (!rows.length)
-        throw new AuthenticationError('User not found.');
+        if (!rows.length) throw new ForbiddenError('User not found.');
 
-      await db.query(
-        `
+        await db.query(
+          `
         UPDATE users
         SET last_ip_address = $1, last_activity_at = current_timestamp
         WHERE id = $2;
       `,
-        [ipAddress, me.id],
-      );
+          [ipAddress, me.id],
+        );
 
-      return {
-        id: rows[0].id,
-        createdAt: rows[0].created_at,
-        updatedAt: rows[0].updated_at,
-        firstName: rows[0].first_name,
-        lastName: rows[0].last_name,
-        email: rows[0].email,
-      };
-    },
+        return {
+          id: rows[0].id,
+          createdAt: rows[0].created_at,
+          updatedAt: rows[0].updated_at,
+          firstName: rows[0].first_name,
+          lastName: rows[0].last_name,
+          email: rows[0].email,
+        };
+      },
+    ),
   },
 
   // validating with graphql-up-middleware: https://github.com/JCMais/graphql-yup-middleware

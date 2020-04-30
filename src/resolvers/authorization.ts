@@ -1,4 +1,4 @@
-import { ForbiddenError } from 'apollo-server-express';
+import { ForbiddenError } from 'apollo-server';
 import { skip } from 'graphql-resolvers';
 import { Me } from '../types';
 

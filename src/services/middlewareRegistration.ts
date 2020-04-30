@@ -1,4 +1,4 @@
-import { UserInputError } from 'apollo-server-express';
+import { UserInputError } from 'apollo-server';
 import {
   makeExecutableSchema,
   ITypeDefinitions,

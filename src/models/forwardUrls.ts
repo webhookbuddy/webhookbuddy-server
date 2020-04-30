@@ -15,20 +15,33 @@ const map = (entity): ForwardUrl | null =>
         url: entity.url,
       };
 
-export const findByUserEndpoint = async (
-  userId: number,
-  endpointId: number,
-) =>
-  (
-    await many(
-      `
-        SELECT id, url
-        FROM forward_urls
-        WHERE 
-        user_id = $1
-        AND 
-        endpoint_id = $2
-      `,
-      [userId, endpointId],
-    )
-  ).map(e => map(e));
+export const findByKeys = async (
+  keys: { userId: number; endpointId: number }[],
+) => {
+  const urls = await many(
+    `
+      SELECT id, created_at, url, user_id, endpoint_id
+      FROM forward_urls
+      WHERE 
+      ${keys.reduce((acc, cur) => {
+        if (
+          !Number.isInteger(cur.userId) ||
+          !Number.isInteger(cur.endpointId)
+        )
+          throw new Error('Invalid operation.'); // Guard against SQL injection
+
+        return `${acc} OR (user_id = ${cur.userId} AND endpoint_id = ${cur.endpointId})`;
+      }, '1 = 0')}
+    `,
+  );
+
+  return keys.map(key =>
+    urls
+      .filter(
+        url =>
+          url.user_id === key.userId &&
+          url.endpoint_id === key.endpointId,
+      )
+      .map(e => map(e)),
+  );
+};

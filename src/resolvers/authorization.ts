@@ -1,6 +1,6 @@
 import { ForbiddenError } from 'apollo-server';
 import { skip } from 'graphql-resolvers';
-import { Me } from '../types';
+import { User } from '../types';
 
-export const isAuthenticated = (_, __, { me }: { me: Me }) =>
+export const isAuthenticated = (_, __, { me }: { me: User }) =>
   me ? skip : new ForbiddenError('Not authenticated.');

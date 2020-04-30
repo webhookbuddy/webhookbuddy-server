@@ -1,14 +1,11 @@
 import db from '../db';
 import * as yup from 'yup';
-import {
-  ForbiddenError,
-  UserInputError,
-} from 'apollo-server-express';
+import { UserInputError } from 'apollo-server';
 import { combineResolvers } from 'graphql-resolvers';
 import { isAuthenticated } from './authorization';
 import { hashPassword, verifyPassword } from '../services/password';
 import { createToken } from '../services/authentication';
-import { Me } from '../types';
+import { User } from '../types';
 
 type RegisterInput = {
   firstName: string;
@@ -26,40 +23,7 @@ export default {
   Query: {
     me: combineResolvers(
       isAuthenticated,
-      async (
-        _,
-        __,
-        { me, ipAddress }: { me: Me; ipAddress: string },
-      ) => {
-        const { rows } = await db.query(
-          `
-        SELECT id, created_at, updated_at, first_name, last_name, email
-        FROM users
-        WHERE id = $1
-      `,
-          [me.id],
-        );
-
-        if (!rows.length) throw new ForbiddenError('User not found.');
-
-        await db.query(
-          `
-        UPDATE users
-        SET last_ip_address = $1, last_activity_at = current_timestamp
-        WHERE id = $2;
-      `,
-          [ipAddress, me.id],
-        );
-
-        return {
-          id: rows[0].id,
-          createdAt: rows[0].created_at,
-          updatedAt: rows[0].updated_at,
-          firstName: rows[0].first_name,
-          lastName: rows[0].last_name,
-          email: rows[0].email,
-        };
-      },
+      async (_, __, { me }: { me: User }) => me,
     ),
   },
 

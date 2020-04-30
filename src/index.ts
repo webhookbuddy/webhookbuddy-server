@@ -16,7 +16,7 @@ const server = new ApolloServer({
   playground: true, // enable in Heroku
   schema: schemaWithMiddleware(schema, resolvers),
   context: async ({ req }) => ({
-    me: await getMe(req),
+    me: await getMe(req, ipAddress(req)),
     ipAddress: ipAddress(req),
     jwtSecret: process.env.JWT_SECRET,
   }),

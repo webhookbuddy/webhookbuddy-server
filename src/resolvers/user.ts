@@ -1,11 +1,10 @@
-import { query, any, single } from '../db';
 import * as yup from 'yup';
 import { UserInputError } from 'apollo-server';
 import { combineResolvers } from 'graphql-resolvers';
 import { isAuthenticated } from './authorization';
 import { hashPassword, verifyPassword } from '../services/password';
 import { createToken } from '../services/authentication';
-import { User } from '../types';
+import { findByEmail, insert, updateActivity } from '../models/user';
 
 type RegisterInput = {
   firstName: string;
@@ -23,7 +22,7 @@ export default {
   Query: {
     me: combineResolvers(
       isAuthenticated,
-      async (_, __, { me }: { me: User }) => me,
+      async (_, __, { me }) => me,
     ),
   },
 
@@ -58,57 +57,18 @@ export default {
         { input }: { input: RegisterInput },
         { ipAddress }: { ipAddress: string },
       ) => {
-        if (
-          await any('SELECT id FROM users WHERE email = $1', [
-            input.email,
-          ])
-        )
+        if ((await findByEmail(input.email)) != null)
           throw new Error('Email is already registered.');
 
         const hash = hashPassword(input.password);
 
-        const user = await single(
-          `
-            INSERT INTO users
-            (
-              created_at,
-              updated_at,
-              first_name,
-              last_name,
-              email,
-              password_hash,
-              password_salt,
-              last_logged_in_at,
-              login_count,
-              last_activity_at,
-              activity_count,
-              last_ip_address
-            )
-            VALUES
-            (
-              current_timestamp,
-              current_timestamp,
-              $1,
-              $2,
-              $3,
-              $4,
-              $5,
-              current_timestamp,
-              1,
-              current_timestamp,
-              1,
-              $6
-            )
-            RETURNING *
-          `,
-          [
-            input.firstName,
-            input.lastName,
-            input.email,
-            hash.hash,
-            hash.salt,
-            ipAddress,
-          ],
+        const user = await insert(
+          input.firstName,
+          input.lastName,
+          input.email,
+          hash.hash,
+          hash.salt,
+          ipAddress,
         );
 
         return {
@@ -136,39 +96,19 @@ export default {
         { input }: { input: LoginInput },
         { ipAddress }: { ipAddress: string },
       ) => {
-        const user = await single(
-          `
-            SELECT id, password_hash, password_salt
-            FROM users
-            WHERE email = $1
-          `,
-          [input.email],
-        );
-
+        const user = await findByEmail(input.email);
         if (!user) throw new UserInputError('Invalid login.');
 
         if (
           !verifyPassword(
             input.password,
-            user.password_hash,
-            user.password_salt,
+            user.passwordHash,
+            user.passwordSalt,
           )
         )
           throw new UserInputError('Invalid login.');
 
-        await query(
-          `
-            UPDATE users
-            SET
-              last_logged_in_at = current_timestamp,
-              login_count = login_count + 1,
-              last_activity_at = current_timestamp,
-              activity_count = activity_count + 1,
-              last_ip_address = $1
-            WHERE id = $2
-          `,
-          [ipAddress, user.id],
-        );
+        await updateActivity(user.id, ipAddress, true, true);
 
         return {
           token: createToken(

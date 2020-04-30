@@ -21,6 +21,11 @@ export const many = async (
   return rows;
 };
 
+export const any = async (
+  text: string | QueryConfig<any>,
+  params?: Array<any>,
+) => (await many(text, params)).length > 0;
+
 export const first = async (
   text: string | QueryConfig<any>,
   params?: Array<any>,
@@ -30,7 +35,12 @@ export const first = async (
   else return null;
 };
 
-export const any = async (
+export const single = async (
   text: string | QueryConfig<any>,
   params?: Array<any>,
-) => (await many(text, params)).length > 0;
+) => {
+  const rows = await many(text, params);
+  if (!rows.length) return null;
+  if (rows.length === 1) return rows[0];
+  else throw new Error('Multiple rows found.');
+};

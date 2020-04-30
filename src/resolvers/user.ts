@@ -72,9 +72,35 @@ export default {
         const { rows: newUsers } = await db.query(
           `
             INSERT INTO users
-              (created_at, updated_at, first_name, last_name, email, password_hash, password_salt, last_ip_address, last_logged_in_at, last_activity_at)
+            (
+              created_at,
+              updated_at,
+              first_name,
+              last_name,
+              email,
+              password_hash,
+              password_salt,
+              last_logged_in_at,
+              login_count,
+              last_activity_at,
+              activity_count,
+              last_ip_address
+            )
             VALUES
-              (current_timestamp, current_timestamp, $1, $2, $3, $4, $5, $6, current_timestamp, current_timestamp)
+            (
+              current_timestamp,
+              current_timestamp,
+              $1,
+              $2,
+              $3,
+              $4,
+              $5,
+              current_timestamp,
+              1,
+              current_timestamp,
+              1,
+              $6
+            )
             RETURNING *
           `,
           [

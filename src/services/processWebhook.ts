@@ -1,4 +1,5 @@
 import { single } from '../db';
+import { findByReferenceId } from '../models/endpoint';
 
 const isJSON = (json: string) => {
   try {
@@ -26,11 +27,7 @@ const processWebhook = async ({
   query: object;
   body: string;
 }) => {
-  const endpoint = await single(
-    'SELECT id FROM endpoints WHERE reference_id = $1',
-    [referenceId],
-  );
-
+  const endpoint = await findByReferenceId(referenceId);
   if (!endpoint) throw new Error(`Endpoint not found.`);
 
   const parts = contentType

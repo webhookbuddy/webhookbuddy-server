@@ -1,4 +1,5 @@
-import { single, many } from '../db';
+import { many } from '../db';
+import { findById } from '../models/endpoint';
 import { isAuthenticated, isEndpointAllowed } from './authorization';
 import { combineResolvers } from 'graphql-resolvers';
 
@@ -7,23 +8,7 @@ export default {
     endpoint: combineResolvers(
       isAuthenticated,
       isEndpointAllowed,
-      async (_, { id }) => {
-        const endpoint = await single(
-          `
-            SELECT id, created_at, reference_id, name
-            FROM endpoints
-            WHERE id = $1
-          `,
-          [id],
-        );
-
-        return {
-          id: endpoint.id,
-          createdAt: endpoint.created_at,
-          referenceId: endpoint.reference_id,
-          name: endpoint.name,
-        };
-      },
+      async (_, { id }) => await findById(id),
     ),
   },
 

@@ -23,7 +23,9 @@ export default {
   },
 
   // validating with graphql-up-middleware: https://github.com/JCMais/graphql-yup-middleware
-  // for examples, see Step 2: Adding the validation schema: https://itnext.io/graphql-mutation-arguments-validation-with-yup-using-graphql-middleware-645822fb748
+  // for examples:
+  // - see Step 2: Adding the validation schema: https://itnext.io/graphql-mutation-arguments-validation-with-yup-using-graphql-middleware-645822fb748
+  // - https://github.com/jquense/yup#usage
   Mutation: {
     register: {
       validationSchema: yup.object().shape({

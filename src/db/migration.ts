@@ -1,4 +1,4 @@
-import { createDb, migrate } from 'postgres-migrations';
+import { migrate } from 'postgres-migrations';
 import { pool } from './index';
 
 // https://github.com/ThomWright/postgres-migrations
@@ -6,7 +6,6 @@ import { pool } from './index';
 export const migrateDB = async () => {
   const client = await pool.connect();
   try {
-    await createDb(process.env.DATABASE, { client });
     await migrate({ client }, 'src/migrations');
   } finally {
     client.release();

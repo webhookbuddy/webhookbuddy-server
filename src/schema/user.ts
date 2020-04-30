@@ -7,7 +7,7 @@ export default gql`
   }
 
   extend type Mutation {
-    register(input: RegisterInput): Token!
+    register(input: RegisterInput!): Token!
     login(input: LoginInput!): Token!
   }
 

@@ -7,6 +7,7 @@ import resolvers from './resolvers';
 import { schemaWithMiddleware } from './services/middlewareRegistration';
 import ipAddress from './services/ipAddress';
 import processWebhook from './services/processWebhook';
+import { getMe } from './services/me';
 
 const app = express();
 
@@ -15,6 +16,7 @@ const server = new ApolloServer({
   playground: true, // enable in Heroku
   schema: schemaWithMiddleware(schema, resolvers),
   context: async ({ req }) => ({
+    me: await getMe(req),
     ipAddress: ipAddress(req),
     jwtSecret: process.env.JWT_SECRET,
   }),

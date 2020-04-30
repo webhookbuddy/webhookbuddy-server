@@ -1,5 +1,4 @@
 import { findById, findByUserId } from '../models/endpoint';
-import { findByUserEndpoint } from '../models/forwardUrls';
 import { isAuthenticated, isEndpointAllowed } from './authorization';
 import { combineResolvers } from 'graphql-resolvers';
 
@@ -19,7 +18,10 @@ export default {
   Mutation: {},
 
   Endpoint: {
-    forwardUrls: async (endpoint, _, { me }) =>
-      await findByUserEndpoint(me.id, endpoint.id),
+    forwardUrls: async (endpoint, _, { me, loaders }) =>
+      await loaders.forwardUrl.load({
+        userId: me.id,
+        endpointId: endpoint.id,
+      }),
   },
 };

@@ -2,6 +2,7 @@ import * as yup from 'yup';
 import { UserInputError } from 'apollo-server';
 import { combineResolvers } from 'graphql-resolvers';
 import { isAuthenticated } from './authorization';
+import validate from './validate';
 import { hashPassword, verifyPassword } from '../services/password';
 import { createToken } from '../services/authentication';
 import { findByEmail, insert, updateActivity } from '../models/user';
@@ -31,28 +32,30 @@ export default {
   // - see Step 2: Adding the validation schema: https://itnext.io/graphql-mutation-arguments-validation-with-yup-using-graphql-middleware-645822fb748
   // - https://github.com/jquense/yup#usage
   Mutation: {
-    register: {
-      validationSchema: yup.object().shape({
-        input: yup.object().shape({
-          firstName: yup
-            .string()
-            .trim()
-            .required('First name is required'),
-          lastName: yup
-            .string()
-            .trim()
-            .required('Last name is required'),
-          email: yup
-            .string()
-            .email('Email is invalid')
-            .required('Email is required'),
-          password: yup
-            .string()
-            .required('Password is required')
-            .min(6, 'Password must be at least 6 characters'),
+    register: combineResolvers(
+      validate(
+        yup.object().shape({
+          input: yup.object().shape({
+            firstName: yup
+              .string()
+              .trim()
+              .required('First name is required'),
+            lastName: yup
+              .string()
+              .trim()
+              .required('Last name is required'),
+            email: yup
+              .string()
+              .email('Email is invalid')
+              .required('Email is required'),
+            password: yup
+              .string()
+              .required('Password is required')
+              .min(6, 'Password must be at least 6 characters'),
+          }),
         }),
-      }),
-      resolve: async (
+      ),
+      async (
         _,
         { input }: { input: RegisterInput },
         { ipAddress }: { ipAddress: string },
@@ -79,19 +82,21 @@ export default {
           ),
         };
       },
-    },
+    ),
 
-    login: {
-      validationSchema: yup.object().shape({
-        input: yup.object().shape({
-          email: yup.string().trim().required('Email is required'),
-          password: yup
-            .string()
-            .trim()
-            .required('Password is required'),
+    login: combineResolvers(
+      validate(
+        yup.object().shape({
+          input: yup.object().shape({
+            email: yup.string().trim().required('Email is required'),
+            password: yup
+              .string()
+              .trim()
+              .required('Password is required'),
+          }),
         }),
-      }),
-      resolve: async (
+      ),
+      async (
         _,
         { input }: { input: LoginInput },
         { ipAddress }: { ipAddress: string },
@@ -118,6 +123,6 @@ export default {
           ),
         };
       },
-    },
+    ),
   },
 };

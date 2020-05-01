@@ -1,11 +1,20 @@
 import * as yup from 'yup';
 import { v4 as uuidv4 } from 'uuid';
-import { findById, findByUserId, insert } from '../models/endpoint';
+import {
+  findById,
+  findByUserId,
+  insert,
+  deleteEndpoint,
+} from '../models/endpoint';
 import { isAuthenticated, isEndpointAllowed } from './authorization';
 import { combineResolvers } from 'graphql-resolvers';
 
 type CreateEndpointInput = {
   name: string;
+};
+
+type DeleteEndpointInput = {
+  id: number;
 };
 
 export default {
@@ -40,6 +49,13 @@ export default {
         }),
       ),
     },
+    deleteEndpoint: combineResolvers(
+      isAuthenticated,
+      isEndpointAllowed,
+      async (_, { input }: { input: DeleteEndpointInput }) => ({
+        affectedRows: await deleteEndpoint(input.id),
+      }),
+    ),
   },
 
   Endpoint: {

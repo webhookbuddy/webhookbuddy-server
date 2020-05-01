@@ -1,4 +1,4 @@
-import { single, transactionSingle, any, many } from '../db';
+import { single, transactionSingle, any, many, query } from '../db';
 
 export type Endpoint = {
   id: number;
@@ -84,4 +84,15 @@ export const insert = async (
       entity.endpoint_id,
     ]),
   );
+};
+
+export const deleteEndpoint = async (id: number) => {
+  const { rowCount } = await query(
+    `
+      DELETE FROM public.endpoints
+      WHERE id = $1
+    `,
+    [id],
+  );
+  return rowCount;
 };

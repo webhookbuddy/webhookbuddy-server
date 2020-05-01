@@ -23,18 +23,22 @@ export default {
 
   Mutation: {
     createEndpoint: {
+      // TODO: Not ideal. Validation runs before isAuthenticated. This could be a limitation of graphql-yup-middleware: https://github.com/JCMais/graphql-yup-middleware/issues/7
       validationSchema: yup.object().shape({
         input: yup.object().shape({
           name: yup.string().trim().required('Name is required'),
         }),
       }),
-      resolve: async (
-        _,
-        { input }: { input: CreateEndpointInput },
-        { me },
-      ) => ({
-        endpoint: await insert(uuidv4(), input.name, me.id),
-      }),
+      resolve: combineResolvers(
+        isAuthenticated,
+        async (
+          _,
+          { input }: { input: CreateEndpointInput },
+          { me },
+        ) => ({
+          endpoint: await insert(uuidv4(), input.name, me.id),
+        }),
+      ),
     },
   },
 

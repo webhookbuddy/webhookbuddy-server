@@ -13,6 +13,21 @@ export const query = (
   params?: Array<any>,
 ) => pool.query(text, params);
 
+export const transaction = (
+  text: string | QueryConfig<any>,
+  params?: Array<any>,
+) => {
+  try {
+    pool.query('BEGIN');
+    const result = pool.query(text, params);
+    pool.query('COMMIT');
+    return result;
+  } catch (error) {
+    pool.query('ROLLBACK');
+    throw error;
+  }
+};
+
 export const many = async (
   text: string | QueryConfig<any>,
   params?: Array<any>,
@@ -21,18 +36,12 @@ export const many = async (
   return rows;
 };
 
-export const any = async (
-  text: string | QueryConfig<any>,
-  params?: Array<any>,
-) => (await many(text, params)).length > 0;
-
-export const first = async (
+export const transactionMany = async (
   text: string | QueryConfig<any>,
   params?: Array<any>,
 ) => {
-  const rows = await many(text, params);
-  if (rows.length) return rows[0];
-  else return null;
+  const { rows } = await transaction(text, params);
+  return rows;
 };
 
 export const single = async (
@@ -44,3 +53,18 @@ export const single = async (
   if (rows.length === 1) return rows[0];
   else throw new Error('Multiple rows found.');
 };
+
+export const transactionSingle = async (
+  text: string | QueryConfig<any>,
+  params?: Array<any>,
+) => {
+  const rows = await transactionMany(text, params);
+  if (!rows.length) return null;
+  if (rows.length === 1) return rows[0];
+  else throw new Error('Multiple rows found.');
+};
+
+export const any = async (
+  text: string | QueryConfig<any>,
+  params?: Array<any>,
+) => (await many(text, params)).length > 0;

@@ -5,7 +5,6 @@ import * as bodyParser from 'body-parser';
 import { ApolloServer } from 'apollo-server-express';
 import schema from './schema';
 import resolvers from './resolvers';
-import { schemaWithMiddleware } from './services/middlewareRegistration';
 import * as DataLoader from 'dataloader';
 import { findByKeys as findForwardUrlsByKeys } from './models/forwardUrls';
 import ipAddress from './services/ipAddress';
@@ -21,7 +20,8 @@ const app = express();
 const server = new ApolloServer({
   introspection: true, // enable for Heroku
   playground: true, // enable in Heroku
-  schema: schemaWithMiddleware(schema, resolvers),
+  typeDefs: schema,
+  resolvers,
   formatError: error => ({
     // If an exception is thrown during context creation, 'Context creation failed: ' is prepended to the error message.
     ...error,

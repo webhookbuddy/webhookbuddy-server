@@ -1,5 +1,5 @@
 import { KeyValue } from './types';
-import { single } from '../db';
+import { single, any } from '../db';
 
 export type Webhook = {
   id: number;
@@ -35,7 +35,30 @@ const map = (entity): Webhook | null =>
         query: Object.entries(entity.query).map(
           o => ({ key: o[0], value: o[1] } as KeyValue),
         ),
+        contentType: entity.content_type,
+        body: entity.body,
       };
+
+export const findById = async (id: number) =>
+  map(await single(`SELECT * FROM webhooks WHERE id = $1`, [id]));
+
+export const isWebhookUser = async (
+  webhookId: number,
+  userId: number,
+) =>
+  await any(
+    `
+      SELECT w.id
+      FROM webhooks as w
+        INNER JOIN endpoints as e on e.id = w.endpoint_id
+        INNER JOIN user_endpoints as ue on ue.endpoint_id = e.id
+      WHERE
+        w.id = $1
+        AND
+        ue.user_id = $2
+    `,
+    [webhookId, userId],
+  );
 
 export const insert = async (
   endpointId: number,

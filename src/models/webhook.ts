@@ -1,5 +1,6 @@
 import { KeyValue, Page } from './types';
 import { single, any, many, query } from '../db';
+import { isJSON } from '../utils/json';
 
 export type Webhook = {
   id: number;
@@ -11,15 +12,6 @@ export type Webhook = {
   contentType?: string;
   body?: string;
   read: boolean;
-};
-
-const isJSON = (json: string) => {
-  try {
-    JSON.parse(json);
-    return true;
-  } catch (error) {
-    return false;
-  }
 };
 
 const map = (entity): Webhook | null =>

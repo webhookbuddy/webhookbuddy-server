@@ -4,7 +4,12 @@ import {
   isWebhookAllowed,
   isEndpointAllowed,
 } from './authorization';
-import { findById, findPage, updateRead } from '../models/webhook';
+import {
+  findById,
+  findPage,
+  updateRead,
+  deleteWebhook,
+} from '../models/webhook';
 
 export default {
   Query: {
@@ -31,6 +36,13 @@ export default {
           webhook: await findById(id, me.id),
         };
       },
+    ),
+    deleteWebhook: combineResolvers(
+      isAuthenticated,
+      isWebhookAllowed,
+      async (_, { input: { id } }) => ({
+        affectedRows: await deleteWebhook(id),
+      }),
     ),
   },
 

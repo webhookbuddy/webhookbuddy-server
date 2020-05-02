@@ -162,3 +162,14 @@ export const updateRead = async (
   const { rowCount } = await query(q, [webhookId, userId]);
   return rowCount;
 };
+
+export const deleteWebhook = async (id: number) => {
+  const { rowCount } = await query(
+    `
+      DELETE FROM webhooks
+      WHERE id = $1
+    `,
+    [id],
+  );
+  return rowCount;
+};

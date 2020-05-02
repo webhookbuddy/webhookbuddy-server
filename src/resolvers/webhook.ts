@@ -1,6 +1,10 @@
 import { combineResolvers } from 'graphql-resolvers';
-import { isAuthenticated, isWebhookAllowed } from './authorization';
-import { findById } from '../models/webhook';
+import {
+  isAuthenticated,
+  isWebhookAllowed,
+  isEndpointAllowed,
+} from './authorization';
+import { findById, findPage } from '../models/webhook';
 
 export default {
   Query: {
@@ -8,6 +12,12 @@ export default {
       isAuthenticated,
       isWebhookAllowed,
       async (_, { id }) => await findById(id),
+    ),
+    webhooks: combineResolvers(
+      isAuthenticated,
+      isEndpointAllowed,
+      async (_, { endpointId, after }, { me }) =>
+        await findPage(endpointId, after),
     ),
   },
 

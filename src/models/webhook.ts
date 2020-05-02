@@ -1,5 +1,5 @@
-import { KeyValue } from './types';
-import { single, any } from '../db';
+import { KeyValue, Page } from './types';
+import { single, any, many } from '../db';
 
 export type Webhook = {
   id: number;
@@ -39,8 +39,44 @@ const map = (entity): Webhook | null =>
         body: entity.body,
       };
 
+const include =
+  'id, created_at, endpoint_id, ip_address, method, headers, query, content_type, body';
+
 export const findById = async (id: number) =>
-  map(await single(`SELECT * FROM webhooks WHERE id = $1`, [id]));
+  map(
+    await single(`SELECT ${include} FROM webhooks WHERE id = $1`, [
+      id,
+    ]),
+  );
+
+export const findPage = async (
+  endpointId: number,
+  after?: number,
+  limit: number = 100,
+): Promise<Page<Webhook>> => {
+  const parameters = [endpointId, limit + 1];
+  const rows = await many(
+    `
+      SELECT ${include}
+      FROM webhooks
+      WHERE endpoint_id = $1
+        ${after ? 'AND id < $3' : ''}
+      ORDER BY id DESC
+      LIMIT $2
+    `,
+    after ? parameters.concat(after) : parameters,
+  );
+
+  const hasNextPage = rows.length > limit;
+  const nodes = hasNextPage ? rows.slice(0, -1) : rows;
+  return {
+    nodes: nodes.map(n => map(n)),
+    pageInfo: {
+      hasNextPage,
+      endCursor: nodes.length ? nodes[nodes.length - 1].id : null,
+    },
+  };
+};
 
 export const isWebhookUser = async (
   webhookId: number,

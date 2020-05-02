@@ -18,7 +18,12 @@ export const isEndpointAllowed = async (_, args, { me }) => {
 };
 
 export const isWebhookAllowed = async (_, args, { me }) => {
-  if (await isWebhookUser(args.id ?? args.input?.id, me.id))
+  if (
+    await isWebhookUser(
+      args.id ?? args.input?.webhookId ?? args.input?.id,
+      me.id,
+    )
+  )
     return skip;
   else throw new ForbiddenError('Not allowed.');
 };

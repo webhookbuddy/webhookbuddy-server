@@ -24,23 +24,6 @@ export default gql`
     forwards: [Forward!]!
   }
 
-  type KeyValue {
-    key: String!
-    value: String
-  }
-
-  type Forward {
-    id: ID!
-    createdAt: DateTime!
-    url: String!
-    method: String!
-    statusCode: Int!
-    headers: [KeyValue!]!
-    query: [KeyValue!]!
-    contentType: String
-    body: String
-  }
-
   type WebhookConnection {
     nodes: [Webhook!]!
     pageInfo: PageInfo!

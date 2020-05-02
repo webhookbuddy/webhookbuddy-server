@@ -1,8 +1,10 @@
 import { KeyValue } from './types';
-import { many } from '../db';
+import { many, single } from '../db';
+import { isJSON } from '../utils/json';
 
 export type Forward = {
   id: number;
+  webhookId: number;
   createdAt: Date;
   url: string;
   method: string;
@@ -13,11 +15,15 @@ export type Forward = {
   body?: string;
 };
 
+const include =
+  'id, created_at, webhook_id, user_id, url, method, status_code, headers, query, content_type, body';
+
 const map = (entity): Forward | null =>
   entity === null
     ? null
     : {
         id: entity.id,
+        webhookId: entity.webhook_id,
         createdAt: entity.created_at,
         url: entity.url,
         method: entity.method,
@@ -37,7 +43,7 @@ export const findByKeys = async (
 ) => {
   const forwards = await many(
     `
-      SELECT *
+      SELECT ${include}
       FROM forwards
       WHERE
       ${keys.reduce((acc, cur) => {
@@ -62,3 +68,40 @@ export const findByKeys = async (
       .map(e => map(e)),
   );
 };
+
+export const insert = async (
+  webhookId: number,
+  userId: number,
+  url: string,
+  method: string,
+  statusCode: number,
+  headers: object,
+  query: object,
+  contentType: string,
+  body?: string,
+) =>
+  map(
+    await single(
+      `
+        INSERT INTO forwards
+          (created_at, webhook_id, user_id, url, method, status_code, headers, query, content_type, body, body_json)
+        VALUES
+          (current_timestamp, $1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+        RETURNING ${include}
+      `,
+      [
+        webhookId,
+        userId,
+        url,
+        method,
+        statusCode,
+        headers,
+        query,
+        contentType,
+        body,
+        contentType === 'application/json' && isJSON(body)
+          ? body
+          : null, // Don't JSON.parse() before inserting, as that'll throw an exception for JSON arrays: https://github.com/brianc/node-postgres/issues/442
+      ],
+    ),
+  );

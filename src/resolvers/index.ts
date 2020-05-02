@@ -2,6 +2,7 @@ import { GraphQLDateTime } from 'graphql-iso-date';
 import userResolvers from './user';
 import endpointResolvers from './endpoint';
 import webhookResolvers from './webhook';
+import forwardResolvers from './forward';
 
 const customScalarResolver = {
   DateTime: GraphQLDateTime,
@@ -12,4 +13,5 @@ export default [
   userResolvers,
   endpointResolvers,
   webhookResolvers,
+  forwardResolvers,
 ];

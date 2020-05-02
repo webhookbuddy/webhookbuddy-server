@@ -3,6 +3,7 @@ import { gql } from 'apollo-server-express';
 import userSchema from './user';
 import endpointSchema from './endpoint';
 import webhookSchema from './webhook';
+import forwardSchema from './forward';
 
 const linkSchema = gql`
   scalar DateTime
@@ -19,6 +20,16 @@ const linkSchema = gql`
     _: Boolean
   }
 
+  type KeyValue {
+    key: String!
+    value: String
+  }
+
+  input KeyValueInput {
+    key: String!
+    value: String
+  }
+
   type PageInfo {
     endCursor: Int
     hasNextPage: Boolean!
@@ -30,4 +41,5 @@ export default [
   userSchema,
   endpointSchema,
   webhookSchema,
+  forwardSchema,
 ];

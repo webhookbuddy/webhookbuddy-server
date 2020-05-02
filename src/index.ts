@@ -2,6 +2,7 @@ import 'dotenv/config';
 import { migrateDB } from './db/migration';
 import * as express from 'express';
 import * as bodyParser from 'body-parser';
+import * as http from 'http';
 import { ApolloServer } from 'apollo-server-express';
 import schema from './schema';
 import resolvers from './resolvers';
@@ -29,11 +30,8 @@ const server = new ApolloServer({
     ...error,
     message: error.message.replace('Context creation failed: ', ''),
   }),
-  context: async ({ req }) => ({
-    me: await getMe(req, ipAddress(req)),
-    ipAddress: ipAddress(req),
-    jwtSecret: process.env.JWT_SECRET,
-    loaders: {
+  context: async ({ req, connection }) => {
+    const loaders = {
       forwardUrl: new DataLoader(
         (keys: { userId: number; endpointId: number }[]) =>
           findForwardUrlsByKeys(keys),
@@ -48,8 +46,23 @@ const server = new ApolloServer({
           cacheKeyFn: key => `${key.userId}-${key.webhookId}`,
         },
       ),
-    },
-  }),
+    };
+
+    // subscription websocket request
+    if (connection)
+      return {
+        loaders,
+      };
+
+    // http request
+    if (req)
+      return {
+        me: await getMe(req, ipAddress(req)),
+        ipAddress: ipAddress(req),
+        jwtSecret: process.env.JWT_SECRET,
+        loaders,
+      };
+  },
 });
 server.applyMiddleware({ app, path: '/graphql' });
 
@@ -84,7 +97,8 @@ app.all('/point/*', async (req, res) => {
 });
 
 const PORT = process.env.PORT || 8000;
-
-app.listen(PORT, () => {
+const httpServer = http.createServer(app);
+server.installSubscriptionHandlers(httpServer);
+httpServer.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);
 });

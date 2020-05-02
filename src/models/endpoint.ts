@@ -67,12 +67,12 @@ export const insert = async (
   const entity = await transactionSingle(
     `
       with new_endpoint as (
-        INSERT INTO public.endpoints(created_at, reference_id, name)
+        INSERT INTO endpoints(created_at, reference_id, name)
         VALUES (current_timestamp, $1, $2)
         RETURNING *
       )
       
-      INSERT INTO public.user_endpoints(user_id, endpoint_id, created_at)
+      INSERT INTO user_endpoints(user_id, endpoint_id, created_at)
       SELECT $3, id, current_timestamp from new_endpoint
       RETURNING *
     `,
@@ -89,7 +89,7 @@ export const insert = async (
 export const deleteEndpoint = async (id: number) => {
   const { rowCount } = await query(
     `
-      DELETE FROM public.endpoints
+      DELETE FROM endpoints
       WHERE id = $1
     `,
     [id],

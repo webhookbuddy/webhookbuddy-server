@@ -4,7 +4,7 @@ import {
   isWebhookAllowed,
   isEndpointAllowed,
 } from './authorization';
-import { findById, findPage } from '../models/webhook';
+import { findById, findPage, updateRead } from '../models/webhook';
 
 export default {
   Query: {
@@ -18,6 +18,19 @@ export default {
       isEndpointAllowed,
       async (_, { endpointId, after }, { me }) =>
         await findPage(endpointId, me.id, after),
+    ),
+  },
+
+  Mutation: {
+    readWebhook: combineResolvers(
+      isAuthenticated,
+      isWebhookAllowed,
+      async (_, { input: { id } }, { me }) => {
+        await updateRead(id, me.id, true);
+        return {
+          webhook: await findById(id, me.id),
+        };
+      },
     ),
   },
 

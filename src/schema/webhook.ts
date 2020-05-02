@@ -47,7 +47,7 @@ export default gql`
   }
 
   input ReadWebhookInput {
-    id: Int!
+    id: ID!
   }
 
   type ReadWebhookPayload {

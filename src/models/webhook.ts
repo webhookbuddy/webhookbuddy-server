@@ -1,5 +1,5 @@
 import { KeyValue, Page } from './types';
-import { single, any, many } from '../db';
+import { single, any, many, query } from '../db';
 
 export type Webhook = {
   id: number;
@@ -139,3 +139,26 @@ export const insert = async (
       ],
     ),
   );
+
+export const updateRead = async (
+  webhookId: number,
+  userId: number,
+  read: boolean,
+) => {
+  const q = read
+    ? `
+        INSERT INTO reads (webhook_id, user_id, created_at)
+        SELECT $1, $2, current_timestamp
+        WHERE NOT EXISTS (
+          SELECT 1
+          FROM reads
+          WHERE webhook_id = $1 AND user_id = $2
+        )
+      `
+    : `
+        DELETE FROM reads
+        WHERE webhook_id = $1 AND user_id = $2;
+    `;
+  const { rowCount } = await query(q, [webhookId, userId]);
+  return rowCount;
+};

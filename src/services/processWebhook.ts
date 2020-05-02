@@ -21,18 +21,13 @@ const processWebhook = async ({
   const endpoint = await findByReferenceId(referenceId);
   if (!endpoint) throw new Error(`Endpoint not found.`);
 
-  const parts = contentType
-    .split(';')
-    .map(s => s.trim().toLowerCase());
-  const mediaType = parts.length > 0 ? parts[0] : null;
-
   const webhook = await insert(
     endpoint.id,
     ipAddress,
     method,
     headers,
     query,
-    mediaType,
+    contentType,
     body,
   );
 

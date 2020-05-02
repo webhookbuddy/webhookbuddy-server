@@ -20,6 +20,7 @@ export default gql`
     query: [KeyValue!]!
     contentType: String
     body: String
+    read: Boolean!
     forwards: [Forward!]!
   }
 

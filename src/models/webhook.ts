@@ -5,11 +5,12 @@ export type Webhook = {
   id: number;
   createdAt: Date;
   ipAddress: string;
-  method: StorageManager;
+  method: string;
   headers: KeyValue[];
   query: KeyValue[];
   contentType?: string;
   body?: string;
+  read: boolean;
 };
 
 const isJSON = (json: string) => {
@@ -37,32 +38,42 @@ const map = (entity): Webhook | null =>
         ),
         contentType: entity.content_type,
         body: entity.body,
+        read: entity.read,
       };
 
-const include =
-  'id, created_at, endpoint_id, ip_address, method, headers, query, content_type, body';
+const includeGraph = `
+  SELECT 
+    w.id,
+    w.created_at,
+    w.endpoint_id,
+    w.ip_address,
+    w.method,
+    w.headers,
+    w.query,
+    w.content_type,
+    w.body,
+    case when r.user_id is null then false else true end as read
+  FROM webhooks as w
+	LEFT JOIN reads as r on r.webhook_id = w.id AND r.user_id = $1
+`;
 
-export const findById = async (id: number) =>
-  map(
-    await single(`SELECT ${include} FROM webhooks WHERE id = $1`, [
-      id,
-    ]),
-  );
+export const findById = async (id: number, userId: number) =>
+  map(await single(`${includeGraph} WHERE id = $2`, [userId, id]));
 
 export const findPage = async (
   endpointId: number,
+  userId: number,
   after?: number,
   limit: number = 100,
 ): Promise<Page<Webhook>> => {
-  const parameters = [endpointId, limit + 1];
+  const parameters = [userId, endpointId, limit + 1];
   const rows = await many(
     `
-      SELECT ${include}
-      FROM webhooks
-      WHERE endpoint_id = $1
-        ${after ? 'AND id < $3' : ''}
+      ${includeGraph}
+      WHERE endpoint_id = $2
+        ${after ? 'AND id < $4' : ''}
       ORDER BY id DESC
-      LIMIT $2
+      LIMIT $3
     `,
     after ? parameters.concat(after) : parameters,
   );

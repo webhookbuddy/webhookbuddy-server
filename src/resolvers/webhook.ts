@@ -11,13 +11,13 @@ export default {
     webhook: combineResolvers(
       isAuthenticated,
       isWebhookAllowed,
-      async (_, { id }) => await findById(id),
+      async (_, { id }, { me }) => await findById(id, me.id),
     ),
     webhooks: combineResolvers(
       isAuthenticated,
       isEndpointAllowed,
       async (_, { endpointId, after }, { me }) =>
-        await findPage(endpointId, after),
+        await findPage(endpointId, me.id, after),
     ),
   },
 

@@ -42,9 +42,9 @@ export const findByUserId = async (userId: number) =>
     )
   ).map(e => map(e));
 
-export const isUserEndpoint = async (
-  userId: number,
+export const isEndpointUser = async (
   endpointId: number,
+  userId: number,
 ) =>
   await any(
     `

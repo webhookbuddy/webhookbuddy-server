@@ -55,6 +55,7 @@ export const findByKeys = async (
 
         return `${acc} OR (user_id = ${cur.userId} AND webhook_id = ${cur.webhookId})`;
       }, '1 = 0')}
+      ORDER BY id DESC
     `,
   );
 

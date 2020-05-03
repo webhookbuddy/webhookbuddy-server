@@ -11,6 +11,10 @@ export default gql`
     deleteWebhook(input: DeleteWebhookInput!): DeleteWebhookPayload!
   }
 
+  extend type Subscription {
+    webhookCreated(endpointId: ID!): CreateWebhookPayload!
+  }
+
   type Webhook {
     id: ID!
     createdAt: DateTime!
@@ -43,5 +47,10 @@ export default gql`
 
   type DeleteWebhookPayload {
     affectedRows: Int!
+  }
+
+  type CreateWebhookPayload {
+    webhook: Webhook!
+    endpoint: Endpoint!
   }
 `;

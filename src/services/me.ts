@@ -3,10 +3,7 @@ import { AuthenticationError } from 'apollo-server';
 import { verifyToken } from './authentication';
 import { findById, updateActivity } from '../models/user';
 
-export const getMe = async (req: Request, ipAddress: string) => {
-  const token = req.headers['x-token'];
-  if (!token) return undefined;
-
+const authorizeAndFetch = async (token: string) => {
   try {
     const { id } = (await verifyToken(
       token,
@@ -16,15 +13,23 @@ export const getMe = async (req: Request, ipAddress: string) => {
     const user = await findById(id);
     if (!user) throw new Error('User was deleted.');
 
-    const activeUser = await updateActivity(
-      id,
-      ipAddress,
-      false,
-      true,
-    );
-
-    return activeUser;
+    return user;
   } catch (e) {
     throw new AuthenticationError('Session expired.');
   }
+};
+
+export const getMe = async (req: Request, ipAddress: string) => {
+  const token = req.headers['x-token'] as string;
+  if (!token) return undefined;
+
+  const user = await authorizeAndFetch(token);
+  return await updateActivity(user.id, ipAddress, false, true);
+};
+
+export const getSubscriber = async (connectionParams: Object) => {
+  const token = connectionParams['x-token'];
+  if (!token) throw new AuthenticationError('Missing x-token.');
+
+  return await authorizeAndFetch(token);
 };

@@ -2,6 +2,7 @@ import 'dotenv/config';
 import { migrateDB } from './db/migration';
 import * as express from 'express';
 import * as bodyParser from 'body-parser';
+import * as http from 'http';
 import { ApolloServer } from 'apollo-server-express';
 import schema from './schema';
 import resolvers from './resolvers';
@@ -10,7 +11,7 @@ import { findByKeys as findForwardUrlsByKeys } from './models/forwardUrl';
 import { findByKeys as findForwardsByKeys } from './models/forward';
 import ipAddress from './services/ipAddress';
 import processWebhook from './services/processWebhook';
-import { getMe } from './services/me';
+import { getMe, getSubscriber } from './services/me';
 import { extractContentType } from './utils/http';
 
 (async function () {
@@ -24,16 +25,18 @@ const server = new ApolloServer({
   playground: true, // enable in Heroku
   typeDefs: schema,
   resolvers,
+  subscriptions: {
+    onConnect: async connectionParams => ({
+      me: await getSubscriber(connectionParams),
+    }),
+  },
   formatError: error => ({
     // If an exception is thrown during context creation, 'Context creation failed: ' is prepended to the error message.
     ...error,
     message: error.message.replace('Context creation failed: ', ''),
   }),
-  context: async ({ req }) => ({
-    me: await getMe(req, ipAddress(req)),
-    ipAddress: ipAddress(req),
-    jwtSecret: process.env.JWT_SECRET,
-    loaders: {
+  context: async ({ req, connection }) => {
+    const loaders = {
       forwardUrl: new DataLoader(
         (keys: { userId: number; endpointId: number }[]) =>
           findForwardUrlsByKeys(keys),
@@ -48,8 +51,24 @@ const server = new ApolloServer({
           cacheKeyFn: key => `${key.userId}-${key.webhookId}`,
         },
       ),
-    },
-  }),
+    };
+
+    // subscription websocket request
+    if (connection)
+      return {
+        ...connection.context, // connection.context contains what's been returned from `onConnect` above (e.g. {me:{}})
+        loaders,
+      };
+
+    // http request
+    if (req)
+      return {
+        me: await getMe(req, ipAddress(req)),
+        ipAddress: ipAddress(req),
+        jwtSecret: process.env.JWT_SECRET,
+        loaders,
+      };
+  },
 });
 server.applyMiddleware({ app, path: '/graphql' });
 
@@ -84,7 +103,8 @@ app.all('/point/*', async (req, res) => {
 });
 
 const PORT = process.env.PORT || 8000;
-
-app.listen(PORT, () => {
+const httpServer = http.createServer(app);
+server.installSubscriptionHandlers(httpServer);
+httpServer.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);
 });

@@ -1,3 +1,4 @@
+import { withFilter } from 'apollo-server';
 import { combineResolvers } from 'graphql-resolvers';
 import {
   isAuthenticated,
@@ -10,6 +11,8 @@ import {
   updateRead,
   deleteWebhook,
 } from '../models/webhook';
+import { isEndpointUser } from '../models/endpoint';
+import pubSub, { EVENTS } from '../subscriptions';
 
 export default {
   Query: {
@@ -44,6 +47,20 @@ export default {
         affectedRows: await deleteWebhook(id),
       }),
     ),
+  },
+
+  Subscription: {
+    webhookCreated: {
+      subscribe: withFilter(
+        // it seems that combineResolvers is not allowed here
+        () => pubSub.asyncIterator(EVENTS.WEBHOOK.CREATED),
+
+        async (payload, { endpointId }, { me }) =>
+          // only double = b/c endpointId is a string while payload.webhookCreated.endpoint.id is a number
+          payload.webhookCreated.endpoint.id == endpointId &&
+          (await isEndpointUser(endpointId, me.id)),
+      ),
+    },
   },
 
   Webhook: {

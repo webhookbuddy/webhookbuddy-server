@@ -13,7 +13,6 @@ export default gql`
     deleteEndpoint(
       input: DeleteEndpointInput!
     ): DeleteEndpointPayload!
-    addForwardUrl(input: AddForwardUrlInput!): AddForwardUrlPayload!
   }
 
   type Endpoint {
@@ -21,12 +20,6 @@ export default gql`
     createdAt: DateTime!
     referenceId: String!
     name: String!
-    forwardUrls: [ForwardUrl!]!
-  }
-
-  type ForwardUrl {
-    id: ID!
-    url: String!
   }
 
   input CreateEndpointInput {
@@ -43,13 +36,5 @@ export default gql`
 
   type DeleteEndpointPayload {
     affectedRows: Int!
-  }
-
-  input AddForwardUrlInput {
-    url: String!
-  }
-
-  type AddForwardUrlPayload {
-    forwardUrl: ForwardUrl!
   }
 `;

@@ -57,12 +57,4 @@ export default {
       }),
     ),
   },
-
-  Endpoint: {
-    forwardUrls: async (endpoint, _, { me, loaders }) =>
-      await loaders.forwardUrl.load({
-        userId: me.id,
-        endpointId: endpoint.id,
-      }),
-  },
 };

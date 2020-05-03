@@ -1,4 +1,5 @@
 import { single, transactionSingle, any, many, query } from '../db';
+import webhook from '../schema/webhook';
 
 export type Endpoint = {
   id: number;
@@ -27,6 +28,22 @@ export const findByReferenceId = async (referenceId: string) =>
     await single(`SELECT * FROM endpoints WHERE reference_id = $1`, [
       referenceId,
     ]),
+  );
+
+export const findByWebhookId = async (webhookId: number) =>
+  map(
+    await single(
+      `
+        SELECT *
+        FROM endpoints as e
+        WHERE EXISTS (
+          SELECT 1 
+          FROM webhooks
+          WHERE id = $1 AND endpoint_id = e.id
+        )
+      `,
+      [webhookId],
+    ),
   );
 
 export const findByUserId = async (userId: number) =>

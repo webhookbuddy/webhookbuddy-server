@@ -11,7 +11,7 @@ import {
   updateRead,
   deleteWebhook,
 } from '../models/webhook';
-import { isEndpointUser } from '../models/endpoint';
+import { isEndpointUser, findByWebhookId } from '../models/endpoint';
 import pubSub, { EVENTS } from '../subscriptions';
 
 const subscribeWithFilter = (
@@ -49,6 +49,17 @@ export default {
       isWebhookAllowed,
       async (_, { input: { id } }, { me }) => {
         await updateRead(id, me.id, true);
+
+        const webhook = await findById(id, me.id);
+        const endpoint = await findByWebhookId(webhook.id);
+
+        pubSub.publish(EVENTS.WEBHOOK.UPDATED, {
+          webhookUpdated: {
+            webhook,
+            endpoint,
+          },
+        });
+
         return {
           webhook: await findById(id, me.id),
         };

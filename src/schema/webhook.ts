@@ -13,6 +13,7 @@ export default gql`
 
   extend type Subscription {
     webhookCreated(endpointId: ID!): CreateWebhookPayload!
+    webhookUpdated(endpointId: ID!): UpdateWebhookPayload!
   }
 
   type Webhook {
@@ -50,6 +51,11 @@ export default gql`
   }
 
   type CreateWebhookPayload {
+    webhook: Webhook!
+    endpoint: Endpoint!
+  }
+
+  type UpdateWebhookPayload {
     webhook: Webhook!
     endpoint: Endpoint!
   }

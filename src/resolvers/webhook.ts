@@ -11,8 +11,22 @@ import {
   updateRead,
   deleteWebhook,
 } from '../models/webhook';
-import { isEndpointUser } from '../models/endpoint';
+import { isEndpointUser, findByWebhookId } from '../models/endpoint';
 import pubSub, { EVENTS } from '../subscriptions';
+
+const subscribeWithFilter = (
+  subscriptionName: string,
+  eventName: string,
+) =>
+  withFilter(
+    // it seems that combineResolvers is not allowed here
+    () => pubSub.asyncIterator(eventName),
+
+    async (payload, { endpointId }, { me }) =>
+      // only double = b/c endpointId is a string while payload.webhookCreated.endpoint.id is a number
+      payload[subscriptionName].endpoint.id == endpointId &&
+      (await isEndpointUser(endpointId, me.id)),
+  );
 
 export default {
   Query: {
@@ -35,6 +49,17 @@ export default {
       isWebhookAllowed,
       async (_, { input: { id } }, { me }) => {
         await updateRead(id, me.id, true);
+
+        const webhook = await findById(id, me.id);
+        const endpoint = await findByWebhookId(webhook.id);
+
+        pubSub.publish(EVENTS.WEBHOOK.UPDATED, {
+          webhookUpdated: {
+            webhook,
+            endpoint,
+          },
+        });
+
         return {
           webhook: await findById(id, me.id),
         };
@@ -51,14 +76,15 @@ export default {
 
   Subscription: {
     webhookCreated: {
-      subscribe: withFilter(
-        // it seems that combineResolvers is not allowed here
-        () => pubSub.asyncIterator(EVENTS.WEBHOOK.CREATED),
-
-        async (payload, { endpointId }, { me }) =>
-          // only double = b/c endpointId is a string while payload.webhookCreated.endpoint.id is a number
-          payload.webhookCreated.endpoint.id == endpointId &&
-          (await isEndpointUser(endpointId, me.id)),
+      subscribe: subscribeWithFilter(
+        'webhookCreated',
+        EVENTS.WEBHOOK.CREATED,
+      ),
+    },
+    webhookUpdated: {
+      subscribe: subscribeWithFilter(
+        'webhookUpdated',
+        EVENTS.WEBHOOK.UPDATED,
       ),
     },
   },

@@ -4,6 +4,8 @@ import { insert, Forward } from '../models/forward';
 import { extractContentType } from '../utils/http';
 import { findById } from '../models/webhook';
 import { KeyValue } from '../models/types';
+import pubSub, { EVENTS } from '../subscriptions';
+import { findByWebhookId } from '../models/endpoint';
 
 type AddForwardInput = {
   webhookId: number;
@@ -40,9 +42,19 @@ export default {
           input.body,
         );
 
+        const webhook = await findById(forward.webhookId, me.id);
+        const endpoint = await findByWebhookId(webhook.id);
+
+        pubSub.publish(EVENTS.WEBHOOK.UPDATED, {
+          webhookUpdated: {
+            webhook,
+            endpoint,
+          },
+        });
+
         return {
           forward,
-          webhook: await findById(forward.webhookId, me.id),
+          webhook,
         };
       },
     ),

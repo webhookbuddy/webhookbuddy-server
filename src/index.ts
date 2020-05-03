@@ -11,7 +11,7 @@ import { findByKeys as findForwardUrlsByKeys } from './models/forwardUrl';
 import { findByKeys as findForwardsByKeys } from './models/forward';
 import ipAddress from './services/ipAddress';
 import processWebhook from './services/processWebhook';
-import { getMe } from './services/me';
+import { getMe, getSubscriber } from './services/me';
 import { extractContentType } from './utils/http';
 
 (async function () {
@@ -25,6 +25,11 @@ const server = new ApolloServer({
   playground: true, // enable in Heroku
   typeDefs: schema,
   resolvers,
+  subscriptions: {
+    onConnect: async connectionParams => ({
+      me: await getSubscriber(connectionParams),
+    }),
+  },
   formatError: error => ({
     // If an exception is thrown during context creation, 'Context creation failed: ' is prepended to the error message.
     ...error,
@@ -51,6 +56,7 @@ const server = new ApolloServer({
     // subscription websocket request
     if (connection)
       return {
+        ...connection.context, // connection.context contains what's been returned from `onConnect` above (e.g. {me:{}})
         loaders,
       };
 

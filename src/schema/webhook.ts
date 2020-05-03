@@ -51,5 +51,6 @@ export default gql`
 
   type CreateWebhookPayload {
     webhook: Webhook!
+    endpoint: Endpoint!
   }
 `;

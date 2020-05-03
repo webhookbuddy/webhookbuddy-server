@@ -14,6 +14,20 @@ import {
 import { isEndpointUser } from '../models/endpoint';
 import pubSub, { EVENTS } from '../subscriptions';
 
+const subscribeWithFilter = (
+  subscriptionName: string,
+  eventName: string,
+) =>
+  withFilter(
+    // it seems that combineResolvers is not allowed here
+    () => pubSub.asyncIterator(eventName),
+
+    async (payload, { endpointId }, { me }) =>
+      // only double = b/c endpointId is a string while payload.webhookCreated.endpoint.id is a number
+      payload[subscriptionName].endpoint.id == endpointId &&
+      (await isEndpointUser(endpointId, me.id)),
+  );
+
 export default {
   Query: {
     webhook: combineResolvers(
@@ -51,14 +65,15 @@ export default {
 
   Subscription: {
     webhookCreated: {
-      subscribe: withFilter(
-        // it seems that combineResolvers is not allowed here
-        () => pubSub.asyncIterator(EVENTS.WEBHOOK.CREATED),
-
-        async (payload, { endpointId }, { me }) =>
-          // only double = b/c endpointId is a string while payload.webhookCreated.endpoint.id is a number
-          payload.webhookCreated.endpoint.id == endpointId &&
-          (await isEndpointUser(endpointId, me.id)),
+      subscribe: subscribeWithFilter(
+        'webhookCreated',
+        EVENTS.WEBHOOK.CREATED,
+      ),
+    },
+    webhookUpdated: {
+      subscribe: subscribeWithFilter(
+        'webhookUpdated',
+        EVENTS.WEBHOOK.UPDATED,
       ),
     },
   },

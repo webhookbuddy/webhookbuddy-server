@@ -1,5 +1,6 @@
 import { findByReferenceId } from '../models/endpoint';
 import { insert } from '../models/webhook';
+import pubSub, { EVENTS } from '../subscriptions';
 
 const processWebhook = async ({
   referenceId,
@@ -30,6 +31,13 @@ const processWebhook = async ({
     contentType,
     body,
   );
+
+  pubSub.publish(EVENTS.WEBHOOK.CREATED, {
+    webhookCreated: {
+      webhook,
+      endpoint,
+    },
+  });
 
   return {
     id: webhook.id,

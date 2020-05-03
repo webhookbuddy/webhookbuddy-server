@@ -7,7 +7,6 @@ import { ApolloServer } from 'apollo-server-express';
 import schema from './schema';
 import resolvers from './resolvers';
 import * as DataLoader from 'dataloader';
-import { findByKeys as findForwardUrlsByKeys } from './models/forwardUrl';
 import { findByKeys as findForwardsByKeys } from './models/forward';
 import ipAddress from './services/ipAddress';
 import processWebhook from './services/processWebhook';
@@ -37,13 +36,6 @@ const server = new ApolloServer({
   }),
   context: async ({ req, connection }) => {
     const loaders = {
-      forwardUrl: new DataLoader(
-        (keys: { userId: number; endpointId: number }[]) =>
-          findForwardUrlsByKeys(keys),
-        {
-          cacheKeyFn: key => `${key.userId}-${key.endpointId}`,
-        },
-      ),
       forward: new DataLoader(
         (keys: { userId: number; webhookId: number }[]) =>
           findForwardsByKeys(keys),

@@ -19,6 +19,11 @@ Add these to `.env`
 * `docker run --name postgres_webhook_buddy -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=docker -e POSTGRES_DB=webhook_buddy -d -p 5432:5432 postgres`
 * attach and use psql: `docker exec -it postgres_webhook_buddy psql -h localhost -U postgres -d webhook_buddy`
 
+### Node
+* Make sure you're running Node version 12+ (e.g. 12.16.1)
+  * Subscriptions won't work with Node version 8 or less
+* `npm install`
+
 ## Start
 ```
 npm start

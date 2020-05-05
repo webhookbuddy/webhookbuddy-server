@@ -5,7 +5,12 @@ import { isAuthenticated } from './authorization';
 import validate from './validate';
 import { hashPassword, verifyPassword } from '../services/password';
 import { createToken } from '../services/authentication';
-import { findByEmail, insert, updateActivity } from '../models/user';
+import {
+  findByEmail,
+  insert,
+  updateActivity,
+  incrementFailedLoginAttempts,
+} from '../models/user';
 
 type RegisterInput = {
   firstName: string;
@@ -110,8 +115,10 @@ export default {
             user.passwordHash,
             user.passwordSalt,
           )
-        )
+        ) {
+          await incrementFailedLoginAttempts(user.id);
           throw new UserInputError('Invalid login.');
+        }
 
         await updateActivity(user.id, ipAddress, true, true);
 

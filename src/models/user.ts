@@ -108,7 +108,7 @@ export const updateActivity = async (
         SET
           ${
             incrementLogin
-              ? 'last_logged_in_at = current_timestamp, login_count = login_count + 1,'
+              ? 'last_logged_in_at = current_timestamp, login_count = login_count + 1, failed_login_attempts = 0,'
               : ''
           }
           ${
@@ -121,5 +121,18 @@ export const updateActivity = async (
         RETURNING *
       `,
       [ipAddress, id],
+    ),
+  );
+
+export const incrementFailedLoginAttempts = async (id: number) =>
+  map(
+    await single(
+      `
+        UPDATE users
+        SET failed_login_attempts = failed_login_attempts + 1
+        WHERE id = $1
+        RETURNING *
+      `,
+      [id],
     ),
   );

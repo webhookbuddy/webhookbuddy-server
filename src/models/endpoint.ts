@@ -5,7 +5,7 @@ export type Endpoint = {
   id: number;
   createdAt: Date;
   updatedAt: Date;
-  referenceId: string;
+  url: string;
   name: string;
 };
 
@@ -16,7 +16,7 @@ const map = (entity): Endpoint | null =>
         id: entity.id,
         createdAt: entity.created_at,
         updatedAt: entity.updated_at,
-        referenceId: entity.reference_id,
+        url: `https://point.webhookbuddy.com/${entity.reference_id}`,
         name: entity.name,
       };
 

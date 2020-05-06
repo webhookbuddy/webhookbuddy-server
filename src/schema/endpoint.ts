@@ -18,7 +18,7 @@ export default gql`
   type Endpoint {
     id: ID!
     createdAt: DateTime!
-    referenceId: String!
+    url: String!
     name: String!
   }
 

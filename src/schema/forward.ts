@@ -11,6 +11,7 @@ export default gql`
     url: String!
     method: String!
     statusCode: Int!
+    success: Boolean!
     headers: [KeyValue!]!
     query: [KeyValue!]!
     contentType: String

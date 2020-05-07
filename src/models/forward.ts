@@ -9,6 +9,7 @@ export type Forward = {
   url: string;
   method: string;
   statusCode: number;
+  success: boolean;
   headers: KeyValue[];
   query: KeyValue[];
   contentType?: string;
@@ -28,6 +29,8 @@ const map = (entity): Forward | null =>
         url: entity.url,
         method: entity.method,
         statusCode: entity.status_code,
+        success:
+          entity.status_code >= 200 && entity.status_code < 300,
         headers: Object.entries(entity.headers).map(
           o => ({ key: o[0], value: o[1] } as KeyValue),
         ),

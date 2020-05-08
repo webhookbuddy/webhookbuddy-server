@@ -30,7 +30,7 @@ const map = (entity): Webhook | null =>
         ),
         contentType: entity.content_type,
         body: entity.body,
-        read: entity.read,
+        read: entity.read ?? false,
       };
 
 const includeGraph = `

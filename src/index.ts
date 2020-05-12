@@ -82,7 +82,7 @@ app.all('/point/*', async (req, res) => {
       ipAddress: ipAddress(req),
       method: req.method,
       contentType: extractContentType(req.headers),
-      headers: req.headers,
+      rawHeaders: req.rawHeaders, // use rawHeaders instead of headers, as headers converts all keys to lower-case: https://github.com/nodejs/node-v0.x-archive/issues/1954
       query: req.query,
       body: typeof req.body === 'string' ? req.body : null, // Note: won't work if string is constructed from new String(): https://stackoverflow.com/a/4059166/188740
     });

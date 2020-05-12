@@ -2,12 +2,20 @@ import { findByReferenceId } from '../models/endpoint';
 import { insert } from '../models/webhook';
 import pubSub, { EVENTS } from '../subscriptions';
 
+const mapHeaders = (rawHeaders: string[]) => {
+  const headers = {};
+  for (let i = 0; i < rawHeaders.length; i = i + 2)
+    headers[rawHeaders[i]] = rawHeaders[i + 1];
+
+  return headers;
+};
+
 const processWebhook = async ({
   referenceId,
   ipAddress,
   method,
   contentType,
-  headers,
+  rawHeaders,
   query,
   body,
 }: {
@@ -15,7 +23,7 @@ const processWebhook = async ({
   ipAddress: string;
   method: string;
   contentType: string;
-  headers: object;
+  rawHeaders: string[];
   query: object;
   body: string;
 }) => {
@@ -26,7 +34,7 @@ const processWebhook = async ({
     endpoint.id,
     ipAddress,
     method,
-    headers,
+    mapHeaders(rawHeaders),
     query,
     contentType,
     body,

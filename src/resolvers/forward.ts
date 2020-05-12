@@ -1,6 +1,6 @@
 import { combineResolvers } from 'graphql-resolvers';
 import { isAuthenticated, isWebhookAllowed } from './authorization';
-import { insert, Forward } from '../models/forward';
+import { insert } from '../models/forward';
 import { extractContentType } from '../utils/http';
 import { findById } from '../models/webhook';
 import { KeyValue } from '../models/types';
@@ -14,7 +14,6 @@ type AddForwardInput = {
   statusCode: number;
   headers: KeyValue[];
   query: KeyValue[];
-  contentType: string;
   body: string;
 };
 
@@ -38,7 +37,7 @@ export default {
           input.statusCode,
           keyValueToObject(input.headers),
           keyValueToObject(input.query),
-          extractContentType(input.contentType),
+          extractContentType(keyValueToObject(input.headers)),
           input.body,
         );
 

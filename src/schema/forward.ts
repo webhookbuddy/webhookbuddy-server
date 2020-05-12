@@ -25,7 +25,6 @@ export default gql`
     statusCode: Int!
     headers: [KeyValueInput!]!
     query: [KeyValueInput!]!
-    contentType: String
     body: String
   }
 

@@ -81,7 +81,7 @@ app.all('/point/*', async (req, res) => {
       referenceId: req.params[0],
       ipAddress: ipAddress(req),
       method: req.method,
-      contentType: extractContentType(req.headers['content-type']),
+      contentType: extractContentType(req.headers),
       headers: req.headers,
       query: req.query,
       body: typeof req.body === 'string' ? req.body : null, // Note: won't work if string is constructed from new String(): https://stackoverflow.com/a/4059166/188740

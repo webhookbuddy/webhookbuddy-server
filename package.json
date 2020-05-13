@@ -47,5 +47,8 @@
     "postgres-migrations": "^4.0.3",
     "uuid": "^8.0.0",
     "yup": "^0.28.4"
+  },
+  "engines": {
+    "node": "12.16.x"
   }
 }

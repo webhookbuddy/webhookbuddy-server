@@ -94,7 +94,7 @@ app.all('/point/*', async (req, res) => {
   }
 });
 
-const PORT = process.env.PORT || 8000;
+const PORT = process.env.PORT || 8000; // Heoku sets process.env.PORT
 const httpServer = http.createServer(app);
 server.installSubscriptionHandlers(httpServer);
 httpServer.listen(PORT, () => {

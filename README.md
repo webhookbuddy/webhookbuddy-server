@@ -46,3 +46,21 @@ _Note: Nodemon isn't included in debug mode, so stop/start is required to reflec
 npm run build
 ```
 _Deployable build will be in `dist` folder._
+
+## Deployment
+```
+git push heroku master
+```
+Ensure JWT_SECRET is set in config
+```
+heroku config
+```
+If not, set it:
+```
+heroku config:set JWT_SECRET={strong secret}
+```
+
+View production:
+```
+heroku open
+```

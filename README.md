@@ -29,11 +29,6 @@ Add these to `.env`
 npm start
 ```
 
-## Start with Nodemon
-```
-npm run start:watch
-```
-
 ## Debug in VS Code
 <kbd>F5</kbd>
 

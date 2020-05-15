@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node --inspect=5858 -r ts-node/register ./src/index.ts",
-    "start:watch": "nodemon",
+    "start:debug": "node --inspect=5858 -r ts-node/register ./src/index.ts",
+    "start": "nodemon",
     "build": "tsc",
     "test": "mocha -r ts-node/register src/**/*.spec.ts"
   },

@@ -19,6 +19,7 @@ export default gql`
   type Webhook {
     id: ID!
     createdAt: DateTime!
+    description: String!
     ipAddress: String!
     method: String!
     headers: [KeyValue!]!

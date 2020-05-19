@@ -1,10 +1,13 @@
 import { KeyValue, Page } from './types';
 import { single, any, many, query } from '../db';
 import { isJSON } from '../utils/json';
+import mapToKeyValue from '../services/mapToKeyValue';
+import getDescription from '../services/getDescription';
 
 export type Webhook = {
   id: number;
   createdAt: Date;
+  description: string;
   ipAddress: string;
   method: string;
   headers: KeyValue[];
@@ -20,14 +23,11 @@ const map = (entity): Webhook | null =>
     : {
         id: entity.id,
         createdAt: entity.created_at,
+        description: getDescription(entity),
         ipAddress: entity.ip_address,
         method: entity.method,
-        headers: Object.entries(entity.headers).map(
-          o => ({ key: o[0], value: o[1] } as KeyValue),
-        ),
-        query: Object.entries(entity.query).map(
-          o => ({ key: o[0], value: o[1] } as KeyValue),
-        ),
+        headers: mapToKeyValue(entity.headers),
+        query: mapToKeyValue(entity.query),
         contentType: entity.content_type,
         body: entity.body,
         read: entity.read ?? false,
@@ -44,6 +44,7 @@ const includeGraph = `
     w.query,
     w.content_type,
     w.body,
+    w.body_json,
     case when r.user_id is null then false else true end as read
   FROM webhooks as w
 	LEFT JOIN reads as r on r.webhook_id = w.id AND r.user_id = $1

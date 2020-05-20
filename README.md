@@ -59,3 +59,12 @@ View production:
 ```
 heroku open
 ```
+
+Connect to database with pgAdmin:
+* Get DATABASE_URL
+```
+heroku config
+```
+DATABASE_URL format is: postgres://`{username}`:`{password}`@`{host}`:`{port}`/`{database}`
+
+Specify these in the `Connection` (Host, Port, Maintenance database, Username) and `Advanced` (DB restriction) tabs. You will be prompted for password once you connect for the first time.

@@ -31,6 +31,11 @@ const tryGetSendgrid = (entity: any) =>
       : entity.body_json.map(o => o.event).join(',')
     : null;
 
+const tryGetEventbrite = (entity: any) =>
+  mapToKeyValue(entity.headers).find(
+    o => o.key.toLowerCase() === 'x-eventbrite-event',
+  )?.value;
+
 const tryGetArray = (entity: any) =>
   Array.isArray(entity.body_json)
     ? `${entity.body_json.length} messages`
@@ -39,6 +44,7 @@ const tryGetArray = (entity: any) =>
 const getDescription = (entity: any) =>
   tryGetStripe(entity) ??
   tryGetSendgrid(entity) ??
+  tryGetEventbrite(entity) ??
   tryGetArray(entity) ??
   entity.method;
 

@@ -57,7 +57,7 @@ export const findPage = async (
   endpointId: number,
   userId: number,
   after?: number,
-  limit: number = 100,
+  limit: number = 500,
 ): Promise<Page<Webhook>> => {
   const parameters = [userId, endpointId, limit + 1];
   const rows = await many(

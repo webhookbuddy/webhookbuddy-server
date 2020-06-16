@@ -9,7 +9,7 @@ import {
   findById,
   findPage,
   updateRead,
-  deleteWebhook,
+  deleteWebhooks,
 } from '../models/webhook';
 import { isEndpointUser, findByWebhookId } from '../models/endpoint';
 import pubSub, { EVENTS } from '../subscriptions';
@@ -65,11 +65,11 @@ export default {
         };
       },
     ),
-    deleteWebhook: combineResolvers(
+    deleteWebhooks: combineResolvers(
       isAuthenticated,
       isWebhookAllowed,
-      async (_, { input: { id } }) => ({
-        affectedRows: await deleteWebhook(id),
+      async (_, { input: { ids } }) => ({
+        affectedRows: await deleteWebhooks(ids),
       }),
     ),
   },

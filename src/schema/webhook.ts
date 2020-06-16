@@ -8,7 +8,9 @@ export default gql`
 
   extend type Mutation {
     readWebhook(input: ReadWebhookInput!): ReadWebhookPayload!
-    deleteWebhook(input: DeleteWebhookInput!): DeleteWebhookPayload!
+    deleteWebhooks(
+      input: DeleteWebhooksInput!
+    ): DeleteWebhooksPayload!
   }
 
   extend type Subscription {
@@ -43,11 +45,11 @@ export default gql`
     webhook: Webhook!
   }
 
-  input DeleteWebhookInput {
-    id: ID!
+  input DeleteWebhooksInput {
+    ids: [ID!]!
   }
 
-  type DeleteWebhookPayload {
+  type DeleteWebhooksPayload {
     affectedRows: Int!
   }
 

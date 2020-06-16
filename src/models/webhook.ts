@@ -156,13 +156,24 @@ export const updateRead = async (
   return rowCount;
 };
 
-export const deleteWebhooks = async (ids: number[]) => {
+export const deleteWebhooks = async (
+  userId: number,
+  ids: number[],
+) => {
   const { rowCount } = await query(
     `
-      DELETE FROM webhooks
-      WHERE id = ANY($1::int[])
+      DELETE FROM webhooks as w
+      WHERE
+        w.id = ANY($1::int[])
+        AND
+        EXISTS (
+          SELECT 1
+          FROM endpoints as e
+          INNER JOIN user_endpoints as ue on ue.endpoint_id = e.id
+          WHERE e.id = w.endpoint_id AND ue.user_id = $2
+        )
     `,
-    [ids],
+    [ids, userId],
   );
   return rowCount;
 };

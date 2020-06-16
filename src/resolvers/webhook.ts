@@ -67,9 +67,8 @@ export default {
     ),
     deleteWebhooks: combineResolvers(
       isAuthenticated,
-      isWebhookAllowed,
-      async (_, { input: { ids } }) => ({
-        affectedRows: await deleteWebhooks(ids),
+      async (_, { input: { ids } }, { me }) => ({
+        affectedRows: await deleteWebhooks(me.id, ids),
       }),
     ),
   },

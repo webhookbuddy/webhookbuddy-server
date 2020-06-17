@@ -1,4 +1,4 @@
-import { many, single } from '../db';
+import { many, single, first } from '../db';
 
 export type ForwardUrl = {
   id: number;
@@ -39,14 +39,22 @@ export const insert = async (
   url: string,
 ) =>
   map(
-    await single(
+    (await first(
       `
+        SELECT *
+        FROM forward_urls
+        WHERE endpoint_id = $1 AND user_id = $2 AND url = $3
+      `,
+      [endpointId, userId, url],
+    )) ??
+      (await single(
+        `
         INSERT INTO forward_urls
           (created_at, endpoint_id, user_id, url)
         VALUES
           (current_timestamp, $1, $2, $3)
         RETURNING *
       `,
-      [endpointId, userId, url],
-    ),
+        [endpointId, userId, url],
+      )),
   );

@@ -1,4 +1,4 @@
-import { many, single, first } from '../db';
+import { many, single, first, query } from '../db';
 
 export type ForwardUrl = {
   id: number;
@@ -37,8 +37,8 @@ export const insert = async (
   endpointId: number,
   userId: number,
   url: string,
-) =>
-  map(
+) => {
+  const result = map(
     (await first(
       `
         SELECT *
@@ -58,3 +58,27 @@ export const insert = async (
         [endpointId, userId, url],
       )),
   );
+
+  await prune(endpointId, userId, 5);
+  return result;
+};
+
+const prune = async (
+  endpointId: number,
+  userId: number,
+  limit: number,
+) => {
+  await query(
+    `
+      DELETE FROM forward_urls
+      WHERE id IN (
+        SELECT id
+        FROM forward_urls
+        WHERE endpoint_id = $1 AND user_id = $2
+        ORDER BY created_at DESC
+        OFFSET $3
+      )
+    `,
+    [endpointId, userId, limit],
+  );
+};

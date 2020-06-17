@@ -9,7 +9,10 @@ export const isAuthenticated = (_, __, { me }) =>
 export const isEndpointAllowed = async (_, args, { me }) => {
   if (
     await isEndpointUser(
-      args.id ?? args.endpointId ?? args.input?.id,
+      args.id ??
+        args.endpointId ??
+        args.input?.id ??
+        args.input?.endpointId,
       me.id,
     )
   )

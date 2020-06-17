@@ -46,6 +46,14 @@ export const transactionMany = async (
   return rows;
 };
 
+export const first = async (
+  text: string | QueryConfig<any>,
+  params?: Array<any>,
+) => {
+  const rows = await many(text, params);
+  return rows.length ? rows[0] : null;
+};
+
 export const single = async (
   text: string | QueryConfig<any>,
   params?: Array<any>,

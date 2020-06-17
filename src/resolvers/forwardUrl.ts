@@ -26,11 +26,7 @@ export default {
       validate(
         yup.object().shape({
           input: yup.object().shape({
-            url: yup
-              .string()
-              .trim()
-              .required('URL is required')
-              .url('URL is invalid'),
+            url: yup.string().trim().required('URL is required'), // don't add url validation b/c localhost isn't supported: https://github.com/jquense/yup/issues/800
           }),
         }),
       ),

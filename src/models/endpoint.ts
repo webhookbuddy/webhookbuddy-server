@@ -1,5 +1,4 @@
 import { single, transactionSingle, any, many, query } from '../db';
-import webhook from '../schema/webhook';
 
 export type Endpoint = {
   id: number;

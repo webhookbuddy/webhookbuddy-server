@@ -4,6 +4,7 @@ import userSchema from './user';
 import endpointSchema from './endpoint';
 import webhookSchema from './webhook';
 import forwardSchema from './forward';
+import forwardUrlSchema from './forwardUrl';
 
 const linkSchema = gql`
   scalar DateTime
@@ -42,4 +43,5 @@ export default [
   endpointSchema,
   webhookSchema,
   forwardSchema,
+  forwardUrlSchema,
 ];

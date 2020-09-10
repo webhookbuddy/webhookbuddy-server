@@ -8,6 +8,7 @@ export default gql`
   type Forward {
     id: ID!
     createdAt: DateTime!
+    user: User!
     url: String!
     method: String!
     statusCode: Int!

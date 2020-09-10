@@ -1,4 +1,4 @@
-import { single } from '../db';
+import { many, single } from '../db';
 
 export type User = {
   id: number;
@@ -37,6 +37,15 @@ const map = (entity): User | null =>
 
 export const findById = async (id: number) =>
   map(await single(`SELECT * FROM users WHERE id = $1`, [id]));
+
+export const findByIds = async (ids: number[]) => {
+  const users = await many(
+    `SELECT * FROM users WHERE id = ANY($1::int[])`,
+    [ids],
+  );
+
+  return ids.map(id => map(users.find(user => user.id === id)));
+};
 
 export const findByEmail = async (email: string) =>
   map(await single(`SELECT * FROM users WHERE email = $1`, [email]));

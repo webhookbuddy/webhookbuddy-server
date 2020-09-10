@@ -5,6 +5,7 @@ import { isJSON } from '../utils/json';
 export type Forward = {
   id: number;
   webhookId: number;
+  userId: number;
   createdAt: Date;
   url: string;
   method: string;
@@ -25,6 +26,7 @@ const map = (entity): Forward | null =>
     : {
         id: entity.id,
         webhookId: entity.webhook_id,
+        userId: entity.user_id,
         createdAt: entity.created_at,
         url: entity.url,
         method: entity.method,

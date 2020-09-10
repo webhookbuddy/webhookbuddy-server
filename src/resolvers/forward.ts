@@ -58,4 +58,8 @@ export default {
       },
     ),
   },
+  Forward: {
+    user: async (forward, _, { loaders }) =>
+      await loaders.user.load(forward.userId),
+  },
 };

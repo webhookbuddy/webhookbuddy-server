@@ -8,6 +8,7 @@ import schema from './schema';
 import resolvers from './resolvers';
 import * as DataLoader from 'dataloader';
 import { findByKeys as findForwardsByKeys } from './models/forward';
+import { findByIds as findUsersByIds } from './models/user';
 import ipAddress from './services/ipAddress';
 import processWebhook from './services/processWebhook';
 import { getMe, getSubscriber } from './services/me';
@@ -37,12 +38,12 @@ const server = new ApolloServer({
   context: async ({ req, connection }) => {
     const loaders = {
       forward: new DataLoader(
-        (keys: { userId: number; webhookId: number }[]) =>
-          findForwardsByKeys(keys),
+        (keys: { webhookId: number }[]) => findForwardsByKeys(keys),
         {
-          cacheKeyFn: key => `${key.userId}-${key.webhookId}`,
+          cacheKeyFn: key => key.webhookId,
         },
       ),
+      user: new DataLoader((ids: number[]) => findUsersByIds(ids)),
     };
 
     // subscription websocket request

@@ -41,22 +41,17 @@ const map = (entity): Forward | null =>
         body: entity.body,
       };
 
-export const findByKeys = async (
-  keys: { userId: number; webhookId: number }[],
-) => {
+export const findByKeys = async (keys: { webhookId: number }[]) => {
   const forwards = await many(
     `
       SELECT ${include}
       FROM forwards
       WHERE
       ${keys.reduce((acc, cur) => {
-        if (
-          !Number.isInteger(cur.userId) ||
-          !Number.isInteger(cur.webhookId)
-        )
+        if (!Number.isInteger(cur.webhookId))
           throw new Error('Invalid operation.'); // Guard against SQL injection
 
-        return `${acc} OR (user_id = ${cur.userId} AND webhook_id = ${cur.webhookId})`;
+        return `${acc} OR webhook_id = ${cur.webhookId}`;
       }, '1 = 0')}
       ORDER BY id DESC
     `,
@@ -64,11 +59,7 @@ export const findByKeys = async (
 
   return keys.map(key =>
     forwards
-      .filter(
-        forward =>
-          forward.user_id === key.userId &&
-          forward.webhook_id === key.webhookId,
-      )
+      .filter(forward => forward.webhook_id === key.webhookId)
       .map(e => map(e)),
   );
 };

@@ -37,10 +37,9 @@ const server = new ApolloServer({
   context: async ({ req, connection }) => {
     const loaders = {
       forward: new DataLoader(
-        (keys: { userId: number; webhookId: number }[]) =>
-          findForwardsByKeys(keys),
+        (keys: { webhookId: number }[]) => findForwardsByKeys(keys),
         {
-          cacheKeyFn: key => `${key.userId}-${key.webhookId}`,
+          cacheKeyFn: key => key.webhookId,
         },
       ),
     };

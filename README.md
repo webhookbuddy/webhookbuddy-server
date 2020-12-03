@@ -15,9 +15,12 @@ Add these to `.env`
   ```
 
 ### Postgres
-* `docker pull postgres`
-* `docker run --name postgres_webhook_buddy -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=docker -e POSTGRES_DB=webhook_buddy -d -p 5432:5432 postgres`
+#### Seeded database (recommended)
+* `docker pull johnnyoshika/postgres_webhook_buddy:migration00004`
+* `docker run --name postgres_webhook_buddy --env PGDATA=postgres -d -p 5432:5432 johnnyoshika/postgres_webhook_buddy:migration00004`
 * attach and use psql: `docker exec -it postgres_webhook_buddy psql -h localhost -U postgres -d webhook_buddy`
+#### New database (alternative option)
+* https://github.com/johnnyoshika/webhook-buddy-server/wiki/Create-new-dev-database
 
 ### Node
 * Make sure you're running Node version 12+ (e.g. 12.16.1)
@@ -28,6 +31,10 @@ Add these to `.env`
 ```
 npm start
 ```
+
+## Test user login
+* Email: `lou@email.com`
+* Password: `1Password`
 
 ## Debug in VS Code
 <kbd>F5</kbd>

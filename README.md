@@ -31,6 +31,7 @@ Add these to `.env`
 ```
 npm start
 ```
+Navigate to: http://localhost:8000/graphql
 
 ## Test user login
 * Email: `lou@email.com`

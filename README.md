@@ -1,29 +1,59 @@
 # Webhook Buddy Server
 
-## Setup
+## Quick Start
+When you only need a running server to test [Webhook Buddy Client](https://github.com/webhook-buddy/webhook-buddy-client).
+* `cd` into this directory
+* If `npm install` has been executed (i.e. there's a `node_modules` folder), then delete the `node_modules` folder
+* `docker-compose up -d`
 
-### Postgres
-#### Seeded database (recommended)
+## Development Environment
+When you need a development environment to work on this repo.
+
+### Postgres Setup
 * `docker pull johnnyoshika/postgres_webhook_buddy:migration00004`
-* `docker run --name postgres_webhook_buddy --env PGDATA=postgres -d -p 5432:5432 johnnyoshika/postgres_webhook_buddy:migration00004`
 * attach and use psql: `docker exec -it postgres_webhook_buddy psql -h localhost -U postgres -d webhook_buddy`
-#### New database (alternative option)
-* https://github.com/johnnyoshika/webhook-buddy-server/wiki/Create-new-dev-database
 
-### Node
-* Make sure you're running Node version 12+ (e.g. 12.16.1)
-  * Subscriptions won't work with Node version 8 or less
+### Node Setup
+* Use Node version 12+ (e.g. 12.16.1)
+  * GraphQL subscriptions won't work with Node version 8 or less
 * `npm install`
 
-## Start
+### Start Server
 ```
+docker run --name postgres_webhook_buddy --env PGDATA=postgres -d -p 5432:5432 johnnyoshika/postgres_webhook_buddy:migration00004
 npm start
 ```
-Navigate to: http://localhost:8000/graphql
 
-## Test user login
-* Email: `lou@email.com`
-* Password: `1Password`
+## Explore
+Go to: http://localhost:8000/graphql
+
+### GraphQL Requests
+#### Log In
+```
+mutation {
+  login(input: { email: "lou@email.com", password: "1Password" }) {
+    token
+  }
+}
+```
+#### Get Me
+HTTP Headers:
+```
+{
+  "x-token": "{token value from login mutation}"
+}
+```
+Request:
+```
+{
+  me {
+    id
+    firstName
+    lastName
+    email
+  }
+}
+```
 
 ## Debug in VS Code
 <kbd>F5</kbd>
@@ -63,4 +93,4 @@ heroku config
 ```
 DATABASE_URL format is: postgres://`{username}`:`{password}`@`{host}`:`{port}`/`{database}`
 
-Specify these in the `Connection` (Host, Port, Maintenance database, Username) and `Advanced` (DB restriction) tabs. You will be prompted for password once you connect for the first time.
+Specify these in the `Connection` (Host, Port, Maintenance database, Username) and `Advanced` (DB restriction) tabs. You will be prompted for password when you connect for the first time.

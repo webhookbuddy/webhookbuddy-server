@@ -1,0 +1,29 @@
+version: "3.8"
+
+services:
+
+  server:
+    container_name: webhook_buddy_server
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      DATABASE_HOST: postgres
+    ports:
+      - "8000:8000"
+    networks:
+      - webhook-buddy-network
+
+  postgres:
+    container_name: webhook_buddy_postgres
+    image: johnnyoshika/postgres_webhook_buddy:migration00004
+    environment:
+      PGDATA: postgres
+    ports:
+      - "5432:5432"
+    networks:
+      - webhook-buddy-network
+
+networks:
+  webhook-buddy-network:
+    driver: bridge

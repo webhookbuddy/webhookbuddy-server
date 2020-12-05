@@ -2,18 +2,6 @@
 
 ## Setup
 
-### Environment Variables
-Add these to `.env`
-  ```
-  NODE_ENV=development
-  DATABASE=webhook_buddy
-  DATABASE_USER=postgres
-  DATABASE_PASSWORD=docker
-  DATABASE_HOST=localhost
-  DATABASE_PORT=5432
-  JWT_SECRET={strong secret}
-  ```
-
 ### Postgres
 #### Seeded database (recommended)
 * `docker pull johnnyoshika/postgres_webhook_buddy:migration00004`

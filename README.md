@@ -68,29 +68,7 @@ npm run build
 ```
 _Deployable build will be in `dist` folder._
 
-## Deployment
-```
-git push heroku master
-```
-Ensure JWT_SECRET is set in config
-```
-heroku config
-```
-If not, set it:
-```
-heroku config:set JWT_SECRET={strong secret}
-```
-
-View production:
-```
-heroku open
-```
-
-Connect to database with pgAdmin:
-* Get DATABASE_URL
-```
-heroku config
-```
-DATABASE_URL format is: postgres://`{username}`:`{password}`@`{host}`:`{port}`/`{database}`
-
-Specify these in the `Connection` (Host, Port, Maintenance database, Username) and `Advanced` (DB restriction) tabs. You will be prompted for password when you connect for the first time.
+## Wiki
+* [Create new dev database](https://github.com/johnnyoshika/webhook-buddy-server/wiki/Create-new-dev-database)
+* [Send webhooks to local database](https://github.com/johnnyoshika/webhook-buddy-server/wiki/Send-webhooks-to-local-database)
+* [Deployment](https://github.com/webhook-buddy/webhook-buddy-server/wiki/Deployment)

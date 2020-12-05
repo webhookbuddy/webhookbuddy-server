@@ -6,6 +6,7 @@
   "scripts": {
     "start:debug": "node --inspect=5858 -r ts-node/register ./src/index.ts",
     "start": "nodemon",
+    "start:legacy-watch": "nodemon --legacy-watch",
     "build": "tsc",
     "test": "mocha -r ts-node/register src/**/*.spec.ts"
   },

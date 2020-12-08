@@ -36,6 +36,23 @@ const tryGetEventbrite = (entity: any) =>
     o => o.key.toLowerCase() === 'x-eventbrite-event',
   )?.value;
 
+const getMailgunRecipient = entity =>
+  (entity.body_json?.['event-data']?.recipient ?? '').split('@')[0];
+
+const getMailgunEvent = entity =>
+  entity.body_json?.['event-data']?.event ?? '';
+
+const tryGetMailgun = (entity: any) =>
+  mapToKeyValue(entity.headers).find(
+    o =>
+      o.key.toLowerCase() === 'user-agent' &&
+      o.value.toLowerCase().startsWith('mailgun'),
+  )
+    ? `${getMailgunRecipient(entity)} ${getMailgunEvent(
+        entity,
+      )}`.trim()
+    : null;
+
 const tryGetArray = (entity: any) =>
   Array.isArray(entity.body_json)
     ? `${entity.body_json.length} messages`
@@ -45,6 +62,7 @@ const getDescription = (entity: any) =>
   tryGetStripe(entity) ??
   tryGetSendgrid(entity) ??
   tryGetEventbrite(entity) ??
+  tryGetMailgun(entity) ??
   tryGetArray(entity) ??
   entity.method;
 

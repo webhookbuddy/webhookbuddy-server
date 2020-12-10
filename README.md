@@ -3,7 +3,6 @@
 ## Quick Start
 When you only need a running server to test [Webhook Buddy Client](https://github.com/webhook-buddy/webhook-buddy-client).
 * `cd` into this directory
-* If `npm install` has been executed (i.e. there's a `node_modules` folder), then delete the `node_modules` folder
 * `docker-compose up -d`
 
 ## Development Environment

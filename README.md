@@ -2,14 +2,15 @@
 
 ## Quick Start
 
-When you only need a running server to test [Webhook Buddy Client](https://github.com/webhook-buddy/webhook-buddy-client).
+When you only need a running server to test [Webhook Buddy Client](https://github.com/webhook-buddy/webhook-buddy-client), use `docker-compose` to quickly get the server up and running.
 
-- `cd` into this directory
 - `docker-compose up -d`
 
 ## Development Environment
 
-When you need a development environment to work on this repo.
+### VS Code Setup
+
+Install `Prettier - Code formatter` extension. Prettier will automatically format files on save.
 
 ### Postgres Setup
 

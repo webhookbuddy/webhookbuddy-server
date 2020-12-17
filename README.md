@@ -15,7 +15,6 @@ Install `Prettier - Code formatter` extension. Prettier will automatically forma
 ### Postgres Setup
 
 - `docker pull johnnyoshika/postgres_webhook_buddy:migration00004`
-- attach and use psql: `docker exec -it postgres_webhook_buddy psql -h localhost -U postgres -d webhook_buddy`
 
 ### Node Setup
 

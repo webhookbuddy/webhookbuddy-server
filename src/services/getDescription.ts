@@ -14,7 +14,7 @@ const tryGetStripe = (entity: any) =>
       o.key.toLowerCase() === 'user-agent' &&
       o.value.toLowerCase().startsWith('stripe'),
   )
-    ? `${getStripeCustomer(entity)} ${entity.body_json?.type}`
+    ? `${getStripeCustomer(entity)} ${entity.body_json?.type}`.trim()
     : null;
 
 const tryGetSendgrid = (entity: any) =>

@@ -1,10 +1,10 @@
-import { ForbiddenError } from 'apollo-server';
+import { AuthenticationError, ForbiddenError } from 'apollo-server';
 import { skip } from 'graphql-resolvers';
 import { isEndpointUser } from '../models/endpoint';
 import { isWebhookUser } from '../models/webhook';
 
 export const isAuthenticated = (_, __, { me }) =>
-  me ? skip : new ForbiddenError('Not authenticated.');
+  me ? skip : new AuthenticationError('Not authenticated.');
 
 export const isEndpointAllowed = async (_, args, { me }) => {
   if (

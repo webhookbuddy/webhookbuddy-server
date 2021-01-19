@@ -1,11 +1,11 @@
 import { many, single, first, query } from '../db';
 
-export type ForwardUrl = {
+export interface ForwardUrl {
   id: number;
   createdAt: Date;
   endpointId: number;
   url: string;
-};
+}
 
 const map = (entity): ForwardUrl | null =>
   entity == null

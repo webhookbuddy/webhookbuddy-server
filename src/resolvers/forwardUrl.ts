@@ -4,10 +4,10 @@ import { isAuthenticated, isEndpointAllowed } from './authorization';
 import { findByUserEndpoint, insert } from '../models/forwardUrl';
 import validate from './validate';
 
-type AddForwardUrlInput = {
+interface AddForwardUrlInput {
   endpointId: number;
   url: string;
-};
+}
 
 export default {
   Query: {

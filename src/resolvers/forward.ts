@@ -7,7 +7,7 @@ import { KeyValue } from '../models/types';
 import pubSub, { EVENTS } from '../subscriptions';
 import { findByWebhookId } from '../models/endpoint';
 
-type AddForwardInput = {
+interface AddForwardInput {
   webhookId: number;
   url: string;
   method: string;
@@ -15,7 +15,7 @@ type AddForwardInput = {
   headers: KeyValue[];
   query: KeyValue[];
   body: string;
-};
+}
 
 const keyValueToObject = (keyValues: KeyValue[]) =>
   keyValues.reduce((acc, cur) => {

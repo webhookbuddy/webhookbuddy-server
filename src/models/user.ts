@@ -1,6 +1,6 @@
 import { many, single } from '../db';
 
-export type User = {
+export interface User {
   id: number;
   createdAt: Date;
   updatedAt: Date;
@@ -14,7 +14,7 @@ export type User = {
   lastActivityAt?: Date;
   activityCount: number;
   lastIpAddress?: string;
-};
+}
 
 const map = (entity): User | null =>
   entity === null

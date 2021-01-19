@@ -10,13 +10,13 @@ import { isAuthenticated, isEndpointAllowed } from './authorization';
 import validate from './validate';
 import { combineResolvers } from 'graphql-resolvers';
 
-type CreateEndpointInput = {
+interface CreateEndpointInput {
   name: string;
-};
+}
 
-type DeleteEndpointInput = {
+interface DeleteEndpointInput {
   id: number;
-};
+}
 
 export default {
   Query: {

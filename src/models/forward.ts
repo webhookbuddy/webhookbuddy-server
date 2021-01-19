@@ -2,7 +2,7 @@ import { KeyValue } from './types';
 import { many, single } from '../db';
 import { isJSON } from '../utils/json';
 
-export type Forward = {
+export interface Forward {
   id: number;
   webhookId: number;
   userId: number;
@@ -15,7 +15,7 @@ export type Forward = {
   query: KeyValue[];
   contentType?: string;
   body?: string;
-};
+}
 
 const include =
   'id, created_at, webhook_id, user_id, url, method, status_code, headers, query, content_type, body';

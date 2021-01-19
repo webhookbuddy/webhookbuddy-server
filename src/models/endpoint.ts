@@ -1,12 +1,12 @@
 import { single, transactionSingle, any, many, query } from '../db';
 
-export type Endpoint = {
+export interface Endpoint {
   id: number;
   createdAt: Date;
   updatedAt: Date;
   url: string;
   name: string;
-};
+}
 
 const map = (entity): Endpoint | null =>
   entity === null

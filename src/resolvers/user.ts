@@ -12,17 +12,17 @@ import {
   incrementFailedLoginAttempts,
 } from '../models/user';
 
-type RegisterInput = {
+interface RegisterInput {
   firstName: string;
   lastName: string;
   email: string;
   password: string;
-};
+}
 
-type LoginInput = {
+interface LoginInput {
   email: string;
   password: string;
-};
+}
 
 export default {
   Query: {

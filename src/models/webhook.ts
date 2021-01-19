@@ -4,7 +4,7 @@ import { isJSON } from '../utils/json';
 import mapToKeyValue from '../services/mapToKeyValue';
 import getDescription from '../services/getDescription';
 
-export type Webhook = {
+export interface Webhook {
   id: number;
   createdAt: Date;
   description: string;
@@ -15,7 +15,7 @@ export type Webhook = {
   contentType?: string;
   body?: string;
   read: boolean;
-};
+}
 
 const map = (entity): Webhook | null =>
   entity === null

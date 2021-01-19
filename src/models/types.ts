@@ -1,14 +1,14 @@
-export type KeyValue = {
+export interface KeyValue {
   key: string;
   value: string;
-};
+}
 
-export type Page<T> = {
+export interface Page<T> {
   nodes: T[];
   pageInfo: PageInfo;
-};
+}
 
-export type PageInfo = {
+export interface PageInfo {
   hasNextPage: boolean;
   endCursor?: number;
-};
+}

@@ -23,7 +23,7 @@ const subscribeWithFilter = (
     () => pubSub.asyncIterator(eventName),
 
     async (payload, { endpointId }, { me }) =>
-      // only double = b/c endpointId is a string while payload.webhookCreated.endpoint.id is a number
+      // only double = (== instead of ===) b/c endpointId is a string while payload.webhookCreated.endpoint.id is a number
       payload[subscriptionName].endpoint.id == endpointId &&
       (await isEndpointUser(endpointId, me.id)),
   );

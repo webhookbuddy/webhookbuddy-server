@@ -16,6 +16,7 @@ export default gql`
   extend type Subscription {
     webhookCreated(endpointId: ID!): CreateWebhookPayload!
     webhookUpdated(endpointId: ID!): UpdateWebhookPayload!
+    webhooksDeleted(endpointId: ID!): DeleteWebhooksPayload!
   }
 
   type Webhook {
@@ -46,11 +47,13 @@ export default gql`
   }
 
   input DeleteWebhooksInput {
-    ids: [ID!]!
+    webhookIds: [ID!]!
+    endpointId: ID!
   }
 
   type DeleteWebhooksPayload {
     affectedRows: Int!
+    webhookIds: [ID!]!
   }
 
   type CreateWebhookPayload {

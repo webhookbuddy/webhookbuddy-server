@@ -118,6 +118,10 @@ export default {
   },
 
   Webhook: {
+    reads: async (webhook, _, { loaders }) =>
+      await loaders.read.load({
+        webhookId: webhook.id,
+      }),
     forwards: async (webhook, _, { me, loaders }) =>
       await loaders.forward.load({
         webhookId: webhook.id,

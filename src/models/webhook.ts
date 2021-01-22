@@ -14,7 +14,6 @@ export interface Webhook {
   query: KeyValue[];
   contentType?: string;
   body?: string;
-  read: boolean;
 }
 
 const map = (entity): Webhook | null =>
@@ -30,7 +29,6 @@ const map = (entity): Webhook | null =>
         query: mapToKeyValue(entity.query),
         contentType: entity.content_type,
         body: entity.body,
-        read: entity.read ?? false,
       };
 
 const includeGraph = `
@@ -44,14 +42,12 @@ const includeGraph = `
     w.query,
     w.content_type,
     w.body,
-    w.body_json,
-    case when r.user_id is null then false else true end as read
+    w.body_json
   FROM webhooks as w
-	LEFT JOIN reads as r on r.webhook_id = w.id AND r.user_id = $1
 `;
 
 export const findById = async (id: number, userId: number) =>
-  map(await single(`${includeGraph} WHERE id = $2`, [userId, id]));
+  map(await single(`${includeGraph} WHERE id = $1`, [id]));
 
 export const findPage = async (
   endpointId: number,
@@ -59,14 +55,14 @@ export const findPage = async (
   after?: number,
   limit: number = 500,
 ): Promise<Page<Webhook>> => {
-  const parameters = [userId, endpointId, limit + 1];
+  const parameters = [endpointId, limit + 1];
   const rows = await many(
     `
       ${includeGraph}
-      WHERE endpoint_id = $2
-        ${after ? 'AND id < $4' : ''}
+      WHERE endpoint_id = $1
+        ${after ? 'AND id < $3' : ''}
       ORDER BY id DESC
-      LIMIT $3
+      LIMIT $2
     `,
     after ? parameters.concat(after) : parameters,
   );

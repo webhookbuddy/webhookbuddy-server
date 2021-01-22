@@ -7,6 +7,7 @@ import { ApolloServer } from 'apollo-server-express';
 import schema from './schema';
 import resolvers from './resolvers';
 import * as DataLoader from 'dataloader';
+import { findByKeys as findReadsByKeys } from './models/read';
 import { findByKeys as findForwardsByKeys } from './models/forward';
 import { findByIds as findUsersByIds } from './models/user';
 import ipAddress from './services/ipAddress';
@@ -37,6 +38,12 @@ const server = new ApolloServer({
   }),
   context: async ({ req, connection }) => {
     const loaders = {
+      read: new DataLoader(
+        (keys: { webhookId: number }[]) => findReadsByKeys(keys),
+        {
+          cacheKeyFn: key => key.webhookId,
+        },
+      ),
       forward: new DataLoader(
         (keys: { webhookId: number }[]) => findForwardsByKeys(keys),
         {

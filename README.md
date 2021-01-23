@@ -70,9 +70,7 @@ Request:
 
 ## Debug in VS Code
 
-<kbd>F5</kbd>
-
-It may take several attempts with breakpoints near the top of `src/index.ts` with the cursor active at that breakpoint to get VS Code to start in debug mode, but be persistent. Keep trying!
+Set cursor focus on `src/index.ts`, then <kbd>F5</kbd>
 
 _Note: Re-compile on file change isn't available in debug mode, so stop/start is required to reflect code changes._
 

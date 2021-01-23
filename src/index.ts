@@ -3,6 +3,7 @@ import { migrateDB } from './db/migration';
 import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import * as http from 'http';
+import * as cors from 'cors';
 import { ApolloServer } from 'apollo-server-express';
 import schema from './schema';
 import resolvers from './resolvers';
@@ -20,6 +21,7 @@ import { extractContentType } from './utils/http';
 })();
 
 const app = express();
+app.use(cors());
 
 const server = new ApolloServer({
   introspection: true, // enable for Heroku

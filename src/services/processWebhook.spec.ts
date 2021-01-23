@@ -13,11 +13,23 @@ describe('processWebhook', () => {
       '../models/webhook': {
         insert: () => ({ id: 1 }),
       },
+      '../subscriptions': {
+        default: {
+          publish: () => {},
+        },
+        EVENTS: {
+          WEBHOOK: {
+            CREATED: 'WEBHOOK_CREATED',
+          },
+        },
+        '@noCallThru': true, // Without this, it times out with this error: Error: Timeout of 2000ms exceeded. For async tests and hooks, ensure "done()" is called; if returning a Promise, ensure it resolves.
+      },
     }).default;
 
     const result = await processWebhook({
       referenceId: '123',
       contentType: 'application/json',
+      rawHeaders: ['user-agent', 'Chrome', 'accept', 'anything'],
     });
 
     expect(result).to.have.property('id');

@@ -12,15 +12,13 @@ export const isEndpointAllowed = async (
   args,
   { me }: { me: User },
 ) => {
-  if (
-    await isEndpointUser(
-      args.id ??
-        args.endpointId ??
-        args.input?.id ??
-        args.input?.endpointId,
-      me.id,
-    )
-  )
+  const id: string | undefined =
+    args.id ??
+    args.endpointId ??
+    args.input?.id ??
+    args.input?.endpointId;
+
+  if (!!id && (await isEndpointUser(parseInt(id, 10), me.id)))
     return skip;
   else throw new ForbiddenError('Not allowed.');
 };
@@ -30,12 +28,10 @@ export const isWebhookAllowed = async (
   args,
   { me }: { me: User },
 ) => {
-  if (
-    await isWebhookUser(
-      args.id ?? args.input?.webhookId ?? args.input?.id,
-      me.id,
-    )
-  )
+  const id: string | undefined =
+    args.id ?? args.input?.webhookId ?? args.input?.id;
+
+  if (!!id && (await isWebhookUser(parseInt(id, 10), me.id)))
     return skip;
   else throw new ForbiddenError('Not allowed.');
 };

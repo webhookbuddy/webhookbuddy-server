@@ -11,7 +11,7 @@ const formatMessage = (errors: yup.ValidationError[]) =>
         .map((e, i) => `${i + 1}) ${e}.`)
         .join(' ')}`;
 
-const validate = (schema: yup.ObjectSchema) => async (_, args) => {
+const validate = (schema: yup.AnyObjectSchema) => async (_, args) => {
   try {
     await schema.validate(args, {
       abortEarly: false,

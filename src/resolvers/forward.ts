@@ -46,7 +46,7 @@ export default {
           input.body,
         );
 
-        const webhook = await findById(forward.webhookId, me.id);
+        const webhook = await findById(forward.webhookId);
         const endpoint = await findByWebhookId(webhook.id);
 
         pubSub.publish(EVENTS.WEBHOOK.UPDATED, {

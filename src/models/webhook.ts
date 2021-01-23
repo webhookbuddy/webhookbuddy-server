@@ -46,12 +46,11 @@ const includeGraph = `
   FROM webhooks as w
 `;
 
-export const findById = async (id: number, userId: number) =>
+export const findById = async (id: number) =>
   map(await single(`${includeGraph} WHERE id = $1`, [id]));
 
 export const findPage = async (
   endpointId: number,
-  userId: number,
   after?: number,
   limit: number = 500,
 ): Promise<Page<Webhook>> => {

@@ -40,7 +40,7 @@ export default {
       isAuthenticated,
       isWebhookAllowed,
       async (_, { id }: { id: string }, { me }: { me: User }) =>
-        await findById(parseInt(id, 10), me.id),
+        await findById(parseInt(id, 10)),
     ),
     webhooks: combineResolvers(
       isAuthenticated,
@@ -52,7 +52,7 @@ export default {
           after,
         }: { endpointId: string; after: number | undefined },
         { me }: { me: User },
-      ) => await findPage(parseInt(endpointId, 10), me.id, after),
+      ) => await findPage(parseInt(endpointId, 10), after),
     ),
   },
 
@@ -69,7 +69,7 @@ export default {
 
         await updateRead(webhookId, me.id, true);
 
-        const webhook = await findById(webhookId, me.id);
+        const webhook = await findById(webhookId);
         const endpoint = await findEndpointByWebhookId(webhook.id);
 
         pubSub.publish(EVENTS.WEBHOOK.UPDATED, {
@@ -80,7 +80,7 @@ export default {
         });
 
         return {
-          webhook: await findById(webhookId, me.id),
+          webhook: await findById(webhookId),
         };
       },
     ),

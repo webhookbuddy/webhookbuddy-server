@@ -74,7 +74,7 @@ Request:
 
 It may take several attempts with breakpoints near the top of `src/index.ts` with the cursor active at that breakpoint to get VS Code to start in debug mode, but be persistent. Keep trying!
 
-_Note: Nodemon isn't included in debug mode, so stop/start is required to reflect code changes._
+_Note: Re-compile on file change isn't available in debug mode, so stop/start is required to reflect code changes._
 
 ## Build
 

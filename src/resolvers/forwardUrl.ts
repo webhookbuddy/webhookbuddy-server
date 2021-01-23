@@ -3,9 +3,10 @@ import { combineResolvers } from 'graphql-resolvers';
 import { isAuthenticated, isEndpointAllowed } from './authorization';
 import { findByUserEndpoint, insert } from '../models/forwardUrl';
 import validate from './validate';
+import { User } from '../models/user';
 
 interface AddForwardUrlInput {
-  endpointId: number;
+  endpointId: string;
   url: string;
 }
 
@@ -14,8 +15,11 @@ export default {
     forwardUrls: combineResolvers(
       isAuthenticated,
       isEndpointAllowed,
-      async (_, { endpointId }, { me }) =>
-        await findByUserEndpoint(me.id, endpointId),
+      async (
+        _,
+        { endpointId }: { endpointId: string },
+        { me }: { me: User },
+      ) => await findByUserEndpoint(me.id, parseInt(endpointId, 10)),
     ),
   },
 
@@ -33,9 +37,13 @@ export default {
       async (
         _,
         { input }: { input: AddForwardUrlInput },
-        { me },
+        { me }: { me: User },
       ) => ({
-        forwardUrl: await insert(input.endpointId, me.id, input.url),
+        forwardUrl: await insert(
+          parseInt(input.endpointId, 10),
+          me.id,
+          input.url,
+        ),
       }),
     ),
   },

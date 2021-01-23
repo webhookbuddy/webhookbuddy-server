@@ -9,13 +9,14 @@ import {
 import { isAuthenticated, isEndpointAllowed } from './authorization';
 import validate from './validate';
 import { combineResolvers } from 'graphql-resolvers';
+import { User } from '../models/user';
 
 interface CreateEndpointInput {
   name: string;
 }
 
 interface DeleteEndpointInput {
-  id: number;
+  id: string;
 }
 
 export default {
@@ -23,11 +24,13 @@ export default {
     endpoint: combineResolvers(
       isAuthenticated,
       isEndpointAllowed,
-      async (_, { id }) => await findById(id),
+      async (_, { id }: { id: string }) =>
+        await findById(parseInt(id, 10)),
     ),
     endpoints: combineResolvers(
       isAuthenticated,
-      async (_, __, { me }) => await findByUserId(me.id),
+      async (_, __, { me }: { me: User }) =>
+        await findByUserId(me.id),
     ),
   },
 
@@ -44,7 +47,7 @@ export default {
       async (
         _,
         { input }: { input: CreateEndpointInput },
-        { me },
+        { me }: { me: User },
       ) => ({
         endpoint: await insert(uuidv4(), input.name, me.id),
       }),
@@ -53,7 +56,7 @@ export default {
       isAuthenticated,
       isEndpointAllowed,
       async (_, { input }: { input: DeleteEndpointInput }) => ({
-        affectedRows: await deleteEndpoint(input.id),
+        affectedRows: await deleteEndpoint(parseInt(input.id, 10)),
       }),
     ),
   },

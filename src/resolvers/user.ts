@@ -10,6 +10,7 @@ import {
   insert,
   updateActivity,
   incrementFailedLoginAttempts,
+  User,
 } from '../models/user';
 
 interface RegisterInput {
@@ -28,7 +29,7 @@ export default {
   Query: {
     me: combineResolvers(
       isAuthenticated,
-      async (_, __, { me }) => me,
+      async (_, __, { me }: { me: User }) => me,
     ),
   },
 

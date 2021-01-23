@@ -10,6 +10,7 @@ import {
   findPage,
   updateRead,
   deleteWebhooks,
+  Webhook,
 } from '../models/webhook';
 import {
   isEndpointUser,
@@ -17,6 +18,7 @@ import {
   findByWebhookId as findEndpointByWebhookId,
 } from '../models/endpoint';
 import pubSub, { EVENTS } from '../subscriptions';
+import { User } from '../models/user';
 
 const subscribeWithFilter = (
   subscriptionName: string,
@@ -37,13 +39,20 @@ export default {
     webhook: combineResolvers(
       isAuthenticated,
       isWebhookAllowed,
-      async (_, { id }, { me }) => await findById(id, me.id),
+      async (_, { id }: { id: string }, { me }: { me: User }) =>
+        await findById(parseInt(id, 10), me.id),
     ),
     webhooks: combineResolvers(
       isAuthenticated,
       isEndpointAllowed,
-      async (_, { endpointId, after }, { me }) =>
-        await findPage(endpointId, me.id, after),
+      async (
+        _,
+        {
+          endpointId,
+          after,
+        }: { endpointId: string; after: number | undefined },
+        { me }: { me: User },
+      ) => await findPage(parseInt(endpointId, 10), me.id, after),
     ),
   },
 
@@ -51,10 +60,16 @@ export default {
     readWebhook: combineResolvers(
       isAuthenticated,
       isWebhookAllowed,
-      async (_, { input: { id } }, { me }) => {
-        await updateRead(id, me.id, true);
+      async (
+        _,
+        { input: { id } }: { input: { id: string } },
+        { me }: { me: User },
+      ) => {
+        const webhookId = parseInt(id, 10);
 
-        const webhook = await findById(id, me.id);
+        await updateRead(webhookId, me.id, true);
+
+        const webhook = await findById(webhookId, me.id);
         const endpoint = await findEndpointByWebhookId(webhook.id);
 
         pubSub.publish(EVENTS.WEBHOOK.UPDATED, {
@@ -65,20 +80,28 @@ export default {
         });
 
         return {
-          webhook: await findById(id, me.id),
+          webhook: await findById(webhookId, me.id),
         };
       },
     ),
     deleteWebhooks: combineResolvers(
       isAuthenticated,
-      async (_, { input: { webhookIds, endpointId } }, { me }) => {
+      async (
+        _,
+        {
+          input: { webhookIds, endpointId },
+        }: { input: { webhookIds: string[]; endpointId: string } },
+        { me }: { me: User },
+      ) => {
         const affectedRows = await deleteWebhooks(
           me.id,
-          endpointId,
-          webhookIds,
+          parseInt(endpointId, 10),
+          webhookIds.map(id => parseInt(id, 10)),
         );
 
-        const endpoint = await findEndpointById(endpointId);
+        const endpoint = await findEndpointById(
+          parseInt(endpointId, 10),
+        );
 
         pubSub.publish(EVENTS.WEBHOOK.DELETED, {
           webhooksDeleted: {
@@ -118,11 +141,11 @@ export default {
   },
 
   Webhook: {
-    reads: async (webhook, _, { loaders }) =>
+    reads: async (webhook: Webhook, _, { loaders }) =>
       await loaders.read.load({
         webhookId: webhook.id,
       }),
-    forwards: async (webhook, _, { me, loaders }) =>
+    forwards: async (webhook: Webhook, _, { me, loaders }) =>
       await loaders.forward.load({
         webhookId: webhook.id,
       }),

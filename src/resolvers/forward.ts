@@ -1,14 +1,15 @@
 import { combineResolvers } from 'graphql-resolvers';
 import { isAuthenticated, isWebhookAllowed } from './authorization';
-import { insert } from '../models/forward';
+import { Forward, insert } from '../models/forward';
 import { extractContentType } from '../utils/http';
 import { findById } from '../models/webhook';
 import { KeyValue } from '../models/types';
 import pubSub, { EVENTS } from '../subscriptions';
 import { findByWebhookId } from '../models/endpoint';
+import { User } from '../models/user';
 
 interface AddForwardInput {
-  webhookId: number;
+  webhookId: string;
   url: string;
   method: string;
   statusCode: number;
@@ -28,9 +29,13 @@ export default {
     addForward: combineResolvers(
       isAuthenticated,
       isWebhookAllowed,
-      async (_, { input }: { input: AddForwardInput }, { me }) => {
+      async (
+        _,
+        { input }: { input: AddForwardInput },
+        { me }: { me: User },
+      ) => {
         const forward = await insert(
-          input.webhookId,
+          parseInt(input.webhookId, 10),
           me.id,
           input.url,
           input.method,
@@ -59,7 +64,7 @@ export default {
     ),
   },
   Forward: {
-    user: async (forward, _, { loaders }) =>
+    user: async (forward: Forward, _, { loaders }) =>
       await loaders.user.load(forward.userId),
   },
 };

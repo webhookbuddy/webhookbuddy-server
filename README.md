@@ -70,7 +70,7 @@ Request:
 
 ## Debug in VS Code
 
-Set cursor focus on `src/index.ts`, then <kbd>F5</kbd>
+<kbd>F5</kbd>
 
 _Note: Re-compile on file change isn't available in debug mode, so stop/start is required to reflect code changes._
 

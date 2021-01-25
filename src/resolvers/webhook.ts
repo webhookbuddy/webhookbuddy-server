@@ -28,10 +28,14 @@ const subscribeWithFilter = (
     // it seems that combineResolvers is not allowed here
     () => pubSub.asyncIterator(eventName),
 
-    async (payload, { endpointId }, { me }) =>
-      // only double = (== instead of ===) b/c endpointId is a string while payload.webhookCreated.endpoint.id is a number
+    async (
+      payload,
+      { endpointId }: { endpointId: string },
+      { me }: { me: User },
+    ) =>
+      // only double = (== instead of ===) b/c endpointId is a string while payload.[subscriptionName].endpoint.id is a number
       payload[subscriptionName].endpoint.id == endpointId &&
-      (await isEndpointUser(endpointId, me.id)),
+      (await isEndpointUser(parseInt(endpointId, 10), me.id)),
   );
 
 export default {
@@ -39,7 +43,7 @@ export default {
     webhook: combineResolvers(
       isAuthenticated,
       isWebhookAllowed,
-      async (_, { id }: { id: string }, { me }: { me: User }) =>
+      async (_, { id }: { id: string }) =>
         await findById(parseInt(id, 10)),
     ),
     webhooks: combineResolvers(
@@ -51,7 +55,6 @@ export default {
           endpointId,
           after,
         }: { endpointId: string; after: number | undefined },
-        { me }: { me: User },
       ) => await findPage(parseInt(endpointId, 10), after),
     ),
   },
@@ -145,7 +148,7 @@ export default {
       await loaders.read.load({
         webhookId: webhook.id,
       }),
-    forwards: async (webhook: Webhook, _, { me, loaders }) =>
+    forwards: async (webhook: Webhook, _, { loaders }) =>
       await loaders.forward.load({
         webhookId: webhook.id,
       }),

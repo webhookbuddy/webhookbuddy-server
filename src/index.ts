@@ -1,21 +1,14 @@
 import 'dotenv/config';
-import config from 'config';
-import { migrateDB } from './db/migration';
 import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import * as http from 'http';
 import * as cors from 'cors';
-import { ApolloServer } from 'apollo-server-express';
-import schema from './schema';
-import resolvers from './resolvers';
-import * as DataLoader from 'dataloader';
-import { findByKeys as findReadsByKeys } from './models/read';
-import { findByKeys as findForwardsByKeys } from './models/forward';
-import { findByIds as findUsersByIds } from './models/user';
-import ipAddress from './services/ipAddress';
-import processWebhook from './services/processWebhook';
-import { getMe, getSubscriber } from './services/me';
-import { extractContentType } from './utils/http';
+import config from 'config';
+import apolloServer from 'config/apolloServer';
+import { migrateDB } from 'db/migration';
+import ipAddress from 'services/ipAddress';
+import processWebhook from 'services/processWebhook';
+import { extractContentType } from 'utils/http';
 
 (async function () {
   await migrateDB();
@@ -23,57 +16,7 @@ import { extractContentType } from './utils/http';
 
 const app = express();
 app.use(cors());
-
-const server = new ApolloServer({
-  introspection: true, // enable for Heroku
-  playground: true, // enable in Heroku
-  typeDefs: schema,
-  resolvers,
-  subscriptions: {
-    onConnect: async connectionParams => ({
-      me: await getSubscriber(connectionParams),
-    }),
-  },
-  formatError: error => ({
-    // If an exception is thrown during context creation, 'Context creation failed: ' is prepended to the error message.
-    ...error,
-    message: error.message.replace('Context creation failed: ', ''),
-  }),
-  context: async ({ req, connection }) => {
-    const loaders = {
-      read: new DataLoader(
-        (keys: { webhookId: number }[]) => findReadsByKeys(keys),
-        {
-          cacheKeyFn: key => key.webhookId,
-        },
-      ),
-      forward: new DataLoader(
-        (keys: { webhookId: number }[]) => findForwardsByKeys(keys),
-        {
-          cacheKeyFn: key => key.webhookId,
-        },
-      ),
-      user: new DataLoader((ids: number[]) => findUsersByIds(ids)),
-    };
-
-    // subscription websocket request
-    if (connection)
-      return {
-        ...connection.context, // connection.context contains what's been returned from `onConnect` above (e.g. {me:{}})
-        loaders,
-      };
-
-    // http request
-    if (req)
-      return {
-        me: await getMe(req, ipAddress(req)),
-        ipAddress: ipAddress(req),
-        jwtSecret: config.jwt.secret,
-        loaders,
-      };
-  },
-});
-server.applyMiddleware({ app, path: '/graphql' });
+apolloServer.applyMiddleware({ app, path: '/graphql' });
 
 // make sure bodyParser gets registered as middleware after graphql
 app.use(bodyParser.text({ type: '*/*' }));
@@ -106,7 +49,7 @@ app.all('/point/*', async (req, res) => {
 });
 
 const httpServer = http.createServer(app);
-server.installSubscriptionHandlers(httpServer);
+apolloServer.installSubscriptionHandlers(httpServer);
 httpServer.listen(config.port, () => {
   console.log(`Server is running at http://localhost:${config.port}`);
 });

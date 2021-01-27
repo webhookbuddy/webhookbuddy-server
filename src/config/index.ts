@@ -1,4 +1,4 @@
-const config = {
+export default {
   port: process.env.PORT || 8000, // Heroku sets process.env.PORT
   environment: {
     dev: process.env.NODE_ENV === 'development',

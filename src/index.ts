@@ -1,4 +1,5 @@
 import 'dotenv/config';
+import config from 'config';
 import { migrateDB } from './db/migration';
 import * as express from 'express';
 import * as bodyParser from 'body-parser';
@@ -67,7 +68,7 @@ const server = new ApolloServer({
       return {
         me: await getMe(req, ipAddress(req)),
         ipAddress: ipAddress(req),
-        jwtSecret: process.env.JWT_SECRET,
+        jwtSecret: config.jwt.secret,
         loaders,
       };
   },
@@ -104,9 +105,8 @@ app.all('/point/*', async (req, res) => {
   }
 });
 
-const PORT = process.env.PORT || 8000; // Heoku sets process.env.PORT
 const httpServer = http.createServer(app);
 server.installSubscriptionHandlers(httpServer);
-httpServer.listen(PORT, () => {
-  console.log(`Server is running at http://localhost:${PORT}`);
+httpServer.listen(config.port, () => {
+  console.log(`Server is running at http://localhost:${config.port}`);
 });

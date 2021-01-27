@@ -12,7 +12,6 @@ import {
   incrementFailedLoginAttempts,
   User,
 } from '../models/user';
-import demoSecond from 'demo-second/bar';
 
 interface RegisterInput {
   firstName: string;
@@ -30,10 +29,7 @@ export default {
   Query: {
     me: combineResolvers(
       isAuthenticated,
-      async (_, __, { me }: { me: User }) => ({
-        ...me,
-        firstName: `${me.firstName} id: ${demoSecond.foo.id} newId: ${demoSecond.foo.newId}`,
-      }),
+      async (_, __, { me }: { me: User }) => me,
     ),
   },
 

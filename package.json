@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "ts-node-dev --respawn --transpile-only src/index.ts",
+    "start": "ts-node-dev --respawn --transpile-only -r tsconfig-paths/register src/index.ts",
     "build": "tsc",
     "test": "mocha -r ts-node/register src/**/*.spec.ts"
   },
@@ -45,6 +45,7 @@
     "jsonwebtoken": "^8.5.1",
     "pg": "^8.5.1",
     "postgres-migrations": "^5.1.1",
+    "tsconfig-paths": "^3.9.0",
     "uuid": "^8.3.2",
     "yup": "^0.32.8"
   },

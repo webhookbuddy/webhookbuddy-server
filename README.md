@@ -80,7 +80,20 @@ _Note: Re-compile on file change isn't available in debug mode, so stop/start is
 npm run build
 ```
 
-_Deployable build will be in `dist` folder._
+Deployable build will be in `dist` folder.
+
+Command to run production app in Linux / macOS:
+
+```
+NODE_PATH=dist/ node ./dist/index.js
+```
+
+Command to run production app in Windows:
+
+```
+$env:NODE_PATH="dist/"
+node ./dist/index.js
+```
 
 ## Wiki
 

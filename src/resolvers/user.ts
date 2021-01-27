@@ -1,3 +1,4 @@
+import config from 'config';
 import * as yup from 'yup';
 import { UserInputError } from 'apollo-server';
 import { combineResolvers } from 'graphql-resolvers';
@@ -83,7 +84,7 @@ export default {
         return {
           token: createToken(
             { id: user.id },
-            process.env.JWT_SECRET,
+            config.jwt.secret,
             '60d',
           ),
         };
@@ -126,7 +127,7 @@ export default {
         return {
           token: createToken(
             { id: user.id },
-            process.env.JWT_SECRET,
+            config.jwt.secret,
             '60d',
           ),
         };

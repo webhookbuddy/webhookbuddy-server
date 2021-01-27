@@ -1,13 +1,14 @@
+import config from 'config';
 import { Pool, QueryConfig } from 'pg';
 
-export const pool = process.env.DATABASE_URL
-  ? new Pool({ connectionString: process.env.DATABASE_URL })
+export const pool = config.database.url
+  ? new Pool({ connectionString: config.database.url })
   : new Pool({
-      database: process.env.DATABASE,
-      user: process.env.DATABASE_USER,
-      password: process.env.DATABASE_PASSWORD,
-      host: process.env.DATABASE_HOST,
-      port: parseInt(process.env.DATABASE_PORT, 10),
+      database: config.database.name,
+      user: config.database.user,
+      password: config.database.password,
+      host: config.database.host,
+      port: config.database.port,
     });
 
 export const query = (

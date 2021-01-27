@@ -1,3 +1,4 @@
+import config from 'config';
 import { Request } from 'express';
 import { AuthenticationError } from 'apollo-server';
 import { verifyToken } from './authentication';
@@ -7,7 +8,7 @@ const authorizeAndFetch = async (token: string) => {
   try {
     const { id } = (await verifyToken(
       token,
-      process.env.JWT_SECRET,
+      config.jwt.secret,
     )) as any;
 
     const user = await findById(id);

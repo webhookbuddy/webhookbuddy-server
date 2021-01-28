@@ -1,6 +1,6 @@
 import 'mocha';
 import { expect } from 'chai';
-import * as proxyquire from 'proxyquire';
+import proxyquire from 'proxyquire';
 
 describe('processWebhook', () => {
   it('should return newly created webhook', async () => {
@@ -16,9 +16,7 @@ describe('processWebhook', () => {
         '@noCallThru': true,
       },
       '../subscriptions': {
-        default: {
-          publish: () => {},
-        },
+        publish: () => {},
         EVENTS: {
           WEBHOOK: {
             CREATED: 'WEBHOOK_CREATED',

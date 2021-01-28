@@ -1,7 +1,7 @@
 import 'dotenv/config';
-import * as express from 'express';
-import * as http from 'http';
-import * as cors from 'cors';
+import express from 'express';
+import http from 'http';
+import cors from 'cors';
 import config from 'config';
 import apolloServer from 'config/apolloServer';
 import pointRoutes from 'config/pointRoutes';

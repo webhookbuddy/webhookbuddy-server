@@ -2,7 +2,7 @@ import config from 'config';
 import { ApolloServer } from 'apollo-server-express';
 import schema from 'schema';
 import resolvers from 'resolvers';
-import * as DataLoader from 'dataloader';
+import DataLoader from 'dataloader';
 import ipAddress from 'services/ipAddress';
 import { findByKeys as findReadsByKeys } from 'models/read';
 import { findByKeys as findForwardsByKeys } from 'models/forward';

@@ -1,5 +1,5 @@
 import { Express } from 'express';
-import * as bodyParser from 'body-parser';
+import bodyParser from 'body-parser';
 import ipAddress from 'services/ipAddress';
 import processWebhook from 'services/processWebhook';
 import { extractContentType } from 'utils/http';

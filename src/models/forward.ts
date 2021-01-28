@@ -20,7 +20,7 @@ export interface Forward {
 const include =
   'id, created_at, webhook_id, user_id, url, method, status_code, headers, query, content_type, body';
 
-const map = (entity): Forward | null =>
+const map = (entity: any): Forward | null =>
   entity === null
     ? null
     : {
@@ -74,7 +74,7 @@ export const insert = async (
   statusCode: number,
   headers: object,
   query: object,
-  contentType: string,
+  contentType: string | null | undefined,
   body?: string,
 ) =>
   map(

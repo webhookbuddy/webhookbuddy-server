@@ -27,17 +27,20 @@ const server = new ApolloServer({
   context: async ({ req, connection }) => {
     const loaders = {
       read: new DataLoader(
+        // @ts-ignore TODO: fix type
         (keys: { webhookId: number }[]) => findReadsByKeys(keys),
         {
           cacheKeyFn: key => key.webhookId,
         },
       ),
       forward: new DataLoader(
+        // @ts-ignore TODO: fix type
         (keys: { webhookId: number }[]) => findForwardsByKeys(keys),
         {
           cacheKeyFn: key => key.webhookId,
         },
       ),
+      // @ts-ignore TODO: fix type
       user: new DataLoader((ids: number[]) => findUsersByIds(ids)),
     };
 

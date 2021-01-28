@@ -13,6 +13,10 @@ import {
   incrementFailedLoginAttempts,
   User,
 } from '../models/user';
+import {
+  throwExpression,
+  throwUserInputExpression,
+} from 'utils/throwExpression';
 
 interface RegisterInput {
   firstName: string;
@@ -83,7 +87,9 @@ export default {
 
         return {
           token: createToken(
-            { id: user.id },
+            {
+              id: user?.id ?? throwExpression('user is null'),
+            },
             config.jwt.secret,
             '60d',
           ),
@@ -114,8 +120,10 @@ export default {
         if (
           !verifyPassword(
             input.password,
-            user.passwordHash,
-            user.passwordSalt,
+            user!.passwordHash ??
+              throwUserInputExpression('Password missing.'),
+            user!.passwordSalt ??
+              throwUserInputExpression('Password missing.'),
           )
         ) {
           await incrementFailedLoginAttempts(user.id);

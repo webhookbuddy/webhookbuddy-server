@@ -8,7 +8,7 @@ export interface Endpoint {
   name: string;
 }
 
-const map = (entity): Endpoint | null =>
+const map = (entity: any): Endpoint | null =>
   entity === null
     ? null
     : {

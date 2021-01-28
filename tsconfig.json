@@ -5,6 +5,7 @@
     "baseUrl": "src",
     "skipLibCheck": true,
     "outDir": "dist",
+    "strict": true,
     "sourceMap": true
   },
   "include": ["src/**/*.ts"],

@@ -1,3 +1,5 @@
+import { throwExpression } from 'utils/throwExpression';
+
 export default {
   port: process.env.PORT || 8000, // Heroku sets process.env.PORT
   environment: {
@@ -5,7 +7,11 @@ export default {
     prod: process.env.NODE_ENV === 'production',
   },
   jwt: {
-    secret: process.env.JWT_SECRET,
+    secret:
+      process.env.JWT_SECRET ??
+      throwExpression<string>(
+        'JWT_SECRET environment variable missing',
+      ),
   },
   database: {
     url: process.env.DATABASE_URL, // Heroku sets process.env.DATABASE_URL
@@ -14,6 +20,6 @@ export default {
     user: process.env.DATABASE_USER,
     password: process.env.DATABASE_PASSWORD,
     host: process.env.DATABASE_HOST,
-    port: parseInt(process.env.DATABASE_PORT, 10),
+    port: parseInt(process.env.DATABASE_PORT ?? '5432', 10),
   },
 };

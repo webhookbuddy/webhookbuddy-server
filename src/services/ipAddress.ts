@@ -1,13 +1,9 @@
 import { Request } from 'express';
 
 const ipAddress = (req: Request) =>
-  (
-    <string>req.headers['x-forwarded-for'] ||
-    req.connection.remoteAddress ||
-    ''
-  )
+  (<string>req.headers['x-forwarded-for'] || req.ip || '')
     .split(',')
-    .pop()
+    .pop()!
     .trim();
 
 export default ipAddress;

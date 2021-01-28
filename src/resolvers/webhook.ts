@@ -83,7 +83,7 @@ export default {
         });
 
         return {
-          webhook: await findById(webhookId),
+          webhook,
         };
       },
     ),

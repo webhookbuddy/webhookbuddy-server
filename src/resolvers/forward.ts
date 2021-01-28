@@ -7,6 +7,7 @@ import { KeyValue } from '../models/types';
 import pubSub, { EVENTS } from '../subscriptions';
 import { findByWebhookId } from '../models/endpoint';
 import { User } from '../models/user';
+import { throwExpression } from 'utils/throwExpression';
 
 interface AddForwardInput {
   webhookId: string;
@@ -19,7 +20,7 @@ interface AddForwardInput {
 }
 
 const keyValueToObject = (keyValues: KeyValue[]) =>
-  keyValues.reduce((acc, cur) => {
+  keyValues.reduce((acc: any, cur) => {
     acc[cur.key] = cur.value;
     return acc;
   }, {});
@@ -46,8 +47,12 @@ export default {
           input.body,
         );
 
-        const webhook = await findById(forward.webhookId);
-        const endpoint = await findByWebhookId(webhook.id);
+        const webhook = await findById(
+          forward?.webhookId ?? throwExpression('forward is null'),
+        );
+        const endpoint = await findByWebhookId(
+          webhook?.id ?? throwExpression('webhook is null'),
+        );
 
         pubSub.publish(EVENTS.WEBHOOK.UPDATED, {
           webhookUpdated: {
@@ -64,7 +69,7 @@ export default {
     ),
   },
   Forward: {
-    user: async (forward: Forward, _, { loaders }) =>
+    user: async (forward: Forward, _: unknown, { loaders }: any) =>
       await loaders.user.load(forward.userId),
   },
 };

@@ -28,7 +28,7 @@ export const getMe = async (req: Request, ipAddress: string) => {
   return await updateActivity(user.id, ipAddress, false, true);
 };
 
-export const getSubscriber = async (connectionParams: Object) => {
+export const getSubscriber = async (connectionParams: any) => {
   const token = connectionParams['x-token'];
   if (!token) throw new AuthenticationError('Missing x-token.');
 

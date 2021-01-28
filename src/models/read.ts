@@ -8,7 +8,7 @@ export interface Read {
 
 const include = 'webhook_id, user_id, created_at';
 
-const map = (entity): Read | null =>
+const map = (entity: any): Read | null =>
   entity == null
     ? null
     : {

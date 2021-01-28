@@ -16,7 +16,7 @@ export interface User {
   lastIpAddress?: string;
 }
 
-const map = (entity): User | null =>
+const map = (entity: any): User | null =>
   entity === null
     ? null
     : {

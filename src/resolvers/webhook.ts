@@ -19,6 +19,7 @@ import {
 } from '../models/endpoint';
 import pubSub, { EVENTS } from '../subscriptions';
 import { User } from '../models/user';
+import { throwExpression } from 'utils/throwExpression';
 
 const subscribeWithFilter = (
   subscriptionName: string,
@@ -73,7 +74,9 @@ export default {
         await updateRead(webhookId, me.id, true);
 
         const webhook = await findById(webhookId);
-        const endpoint = await findEndpointByWebhookId(webhook.id);
+        const endpoint = await findEndpointByWebhookId(
+          webhook?.id ?? throwExpression('webhook not found'),
+        );
 
         pubSub.publish(EVENTS.WEBHOOK.UPDATED, {
           webhookUpdated: {
@@ -144,11 +147,15 @@ export default {
   },
 
   Webhook: {
-    reads: async (webhook: Webhook, _, { loaders }) =>
+    reads: async (webhook: Webhook, _: unknown, { loaders }: any) =>
       await loaders.read.load({
         webhookId: webhook.id,
       }),
-    forwards: async (webhook: Webhook, _, { loaders }) =>
+    forwards: async (
+      webhook: Webhook,
+      _: unknown,
+      { loaders }: any,
+    ) =>
       await loaders.forward.load({
         webhookId: webhook.id,
       }),

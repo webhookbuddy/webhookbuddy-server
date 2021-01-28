@@ -4,12 +4,15 @@ import { isEndpointUser } from '../models/endpoint';
 import { User } from '../models/user';
 import { isWebhookUser } from '../models/webhook';
 
-export const isAuthenticated = (_, __, { me }: { me: User }) =>
-  me ? skip : new AuthenticationError('Not authenticated.');
+export const isAuthenticated = (
+  _: unknown,
+  __: unknown,
+  { me }: { me: User },
+) => (me ? skip : new AuthenticationError('Not authenticated.'));
 
 export const isEndpointAllowed = async (
-  _,
-  args,
+  _: unknown,
+  args: any,
   { me }: { me: User },
 ) => {
   const id: string | undefined =
@@ -24,8 +27,8 @@ export const isEndpointAllowed = async (
 };
 
 export const isWebhookAllowed = async (
-  _,
-  args,
+  _: unknown,
+  args: any,
   { me }: { me: User },
 ) => {
   const id: string | undefined =

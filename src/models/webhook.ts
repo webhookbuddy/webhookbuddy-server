@@ -16,7 +16,7 @@ export interface Webhook {
   body?: string;
 }
 
-const map = (entity): Webhook | null =>
+const map = (entity: any): Webhook | null =>
   entity === null
     ? null
     : {
@@ -69,7 +69,7 @@ export const findPage = async (
   const hasNextPage = rows.length > limit;
   const nodes = hasNextPage ? rows.slice(0, -1) : rows;
   return {
-    nodes: nodes.map(n => map(n)),
+    nodes: nodes.map(n => map(n)!),
     pageInfo: {
       hasNextPage,
       endCursor: nodes.length ? nodes[nodes.length - 1].id : null,
@@ -101,8 +101,8 @@ export const insert = async (
   method: string,
   headers: object,
   query: object,
-  contentType?: string,
-  body?: string,
+  contentType: string | null,
+  body: string | null,
 ) =>
   map(
     await single(

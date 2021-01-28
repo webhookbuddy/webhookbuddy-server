@@ -11,9 +11,7 @@ describe('ipAddress', () => {
       headers: {
         'x-forwarded-for': 'forwarded-123',
       },
-      connection: {
-        remoteAddress: 'remote-123',
-      },
+      ip: 'remote-123',
     } as any);
     expect(result).to.be.equal('forwarded-123');
   });
@@ -21,9 +19,7 @@ describe('ipAddress', () => {
   it('should return remoteAddress if x-forwarded-for not found', () => {
     const result = ipAddress({
       headers: {},
-      connection: {
-        remoteAddress: 'remote-123',
-      },
+      ip: 'remote-123',
     } as any);
     expect(result).to.be.equal('remote-123');
   });
@@ -33,9 +29,7 @@ describe('ipAddress', () => {
       headers: {
         'x-forwarded-for': 'forwarded-1, forwarded-2',
       },
-      connection: {
-        remoteAddress: 'remote-123',
-      },
+      ip: 'remote-123',
     } as any);
     expect(result).to.be.equal('forwarded-2');
   });
@@ -43,9 +37,7 @@ describe('ipAddress', () => {
   it('should return last remoteAddress when there are multiple', () => {
     const result = ipAddress({
       headers: {},
-      connection: {
-        remoteAddress: 'remote-1, remote-2',
-      },
+      ip: 'remote-1, remote-2',
     } as any);
     expect(result).to.be.equal('remote-2');
   });
@@ -53,7 +45,6 @@ describe('ipAddress', () => {
   it('should return empty if there are none', () => {
     const result = ipAddress({
       headers: {},
-      connection: {},
     } as any);
     expect(result).to.be.equal('');
   });

@@ -7,7 +7,7 @@ export interface ForwardUrl {
   url: string;
 }
 
-const map = (entity): ForwardUrl | null =>
+const map = (entity: any): ForwardUrl | null =>
   entity == null
     ? null
     : {

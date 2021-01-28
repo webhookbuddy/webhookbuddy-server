@@ -9,9 +9,11 @@ describe('processWebhook', () => {
         findByReferenceId: () => ({
           id: 1,
         }),
+        '@noCallThru': true,
       },
       '../models/webhook': {
         insert: () => ({ id: 1 }),
+        '@noCallThru': true,
       },
       '../subscriptions': {
         default: {

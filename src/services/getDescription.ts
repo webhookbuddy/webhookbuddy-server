@@ -1,6 +1,6 @@
 import mapToKeyValue from './mapToKeyValue';
 
-const getStripeCustomer = entity =>
+const getStripeCustomer = (entity: any) =>
   `${
     entity.body_json?.data?.object?.customer ??
     (entity.body_json?.data?.object?.object === 'customer'
@@ -25,10 +25,10 @@ const tryGetSendgrid = (entity: any) =>
   ) && Array.isArray(entity.body_json)
     ? entity.body_json.length > 5
       ? `${entity.body_json.length} messages: ${entity.body_json
-          .map(o => o.event)
+          .map((o: any) => o.event)
           .slice(0, 3)
           .join(',')}...`
-      : entity.body_json.map(o => o.event).join(',')
+      : entity.body_json.map((o: any) => o.event).join(',')
     : null;
 
 const tryGetEventbrite = (entity: any) =>
@@ -36,10 +36,10 @@ const tryGetEventbrite = (entity: any) =>
     o => o.key.toLowerCase() === 'x-eventbrite-event',
   )?.value;
 
-const getMailgunRecipient = entity =>
+const getMailgunRecipient = (entity: any) =>
   (entity.body_json?.['event-data']?.recipient ?? '').split('@')[0];
 
-const getMailgunEvent = entity =>
+const getMailgunEvent = (entity: any) =>
   entity.body_json?.['event-data']?.event ?? '';
 
 const tryGetMailgun = (entity: any) =>

@@ -1,9 +1,10 @@
+import { throwExpression } from '../utils/throwExpression';
 import { findByReferenceId } from '../models/endpoint';
 import { insert } from '../models/webhook';
 import pubSub, { EVENTS } from '../subscriptions';
 
 const mapHeaders = (rawHeaders: string[]) => {
-  const headers = {};
+  const headers: any = {};
   for (let i = 0; i < rawHeaders.length; i = i + 2)
     headers[rawHeaders[i]] = rawHeaders[i + 1];
 
@@ -22,10 +23,10 @@ const processWebhook = async ({
   referenceId: string;
   ipAddress: string;
   method: string;
-  contentType: string;
+  contentType: string | null;
   rawHeaders: string[];
   query: object;
-  body: string;
+  body: string | null;
 }) => {
   const endpoint = await findByReferenceId(referenceId);
   if (!endpoint) throw new Error(`Endpoint not found.`);
@@ -48,7 +49,7 @@ const processWebhook = async ({
   });
 
   return {
-    id: webhook.id,
+    id: webhook?.id ?? throwExpression('webhook is null'),
   };
 };
 

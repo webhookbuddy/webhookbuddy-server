@@ -1,5 +1,4 @@
 import crypto from 'crypto';
-import { throwExpression } from 'utils/throwExpression';
 
 const iterations = 10000;
 

@@ -1,7 +1,6 @@
-version: "3.8"
+version: '3.8'
 
 services:
-
   server:
     container_name: webhook_buddy_server
     build:
@@ -10,7 +9,7 @@ services:
     environment:
       DATABASE_HOST: postgres
     ports:
-      - "8000:8000"
+      - '8000:8000'
     networks:
       - webhook-buddy-network
 
@@ -20,10 +19,15 @@ services:
     environment:
       PGDATA: postgres
     ports:
-      - "5432:5432"
+      - '5432:5432'
     networks:
       - webhook-buddy-network
+    volumes:
+      - postgres-volume:/postgres
 
 networks:
   webhook-buddy-network:
     driver: bridge
+
+volumes:
+  postgres-volume:

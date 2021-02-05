@@ -11,7 +11,7 @@ services:
     ports:
       - '8000:8000'
     networks:
-      - webhook-buddy-network
+      - common-network
 
   postgres:
     container_name: webhook_buddy_postgres
@@ -21,12 +21,12 @@ services:
     ports:
       - '5432:5432'
     networks:
-      - webhook-buddy-network
+      - common-network
     volumes:
       - postgres-volume:/postgres
 
 networks:
-  webhook-buddy-network:
+  common-network:
     driver: bridge
 
 volumes:

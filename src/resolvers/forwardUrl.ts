@@ -1,7 +1,11 @@
 import * as yup from 'yup';
 import { combineResolvers } from 'graphql-resolvers';
 import { isAuthenticated, isEndpointAllowed } from './authorization';
-import { findByUserEndpoint, insert } from '../models/forwardUrl';
+import {
+  findByUserEndpoint,
+  insert,
+  deleteForwardUrls,
+} from '../models/forwardUrl';
 import validate from './validate';
 import { User } from '../models/user';
 
@@ -45,6 +49,24 @@ export default {
           input.url,
         ),
       }),
+    ),
+
+    deleteForwardUrls: combineResolvers(
+      isAuthenticated,
+      isEndpointAllowed,
+      async (
+        _,
+        { input }: { input: AddForwardUrlInput },
+        { me }: { me: User },
+      ) => {
+        const affectedRows = await deleteForwardUrls(
+          me.id,
+          parseInt(input.endpointId, 10),
+          input.url,
+        );
+
+        return { affectedRows };
+      },
     ),
   },
 };

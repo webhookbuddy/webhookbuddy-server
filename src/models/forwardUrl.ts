@@ -82,3 +82,27 @@ const prune = async (
     [endpointId, userId, limit],
   );
 };
+
+export const deleteForwardUrls = async (
+  userId: number,
+  endpointId: number,
+  forwardUrl: string,
+) => {
+  const { rowCount } = await query(
+    `
+  DELETE FROM forward_urls as f
+  WHERE
+    f.endpoint_id = $1
+    AND
+    f.url = $2
+    AND
+    EXISTS (
+      SELECT 1
+      FROM endpoints as e
+      INNER JOIN user_endpoints as ue on ue.endpoint_id = e.id
+      WHERE e.id = f.endpoint_id AND ue.user_id = $3
+    )`,
+    [endpointId, forwardUrl, userId],
+  );
+  return rowCount;
+};

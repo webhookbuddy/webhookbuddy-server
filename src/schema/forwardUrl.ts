@@ -7,6 +7,9 @@ export default gql`
 
   extend type Mutation {
     addForwardUrl(input: AddForwardUrlInput!): AddForwardUrlPayload!
+    deleteForwardUrls(
+      input: AddForwardUrlInput!
+    ): DeleteForwardUrlPayload!
   }
 
   type ForwardUrl {
@@ -23,5 +26,9 @@ export default gql`
 
   type AddForwardUrlPayload {
     forwardUrl: ForwardUrl!
+  }
+
+  type DeleteForwardUrlPayload {
+    affectedRows: Int!
   }
 `;

@@ -14,6 +14,11 @@ interface AddForwardUrlInput {
   url: string;
 }
 
+interface DeleteForwardUrlInput {
+  endpointId: string;
+  url: string;
+}
+
 export default {
   Query: {
     forwardUrls: combineResolvers(
@@ -56,7 +61,7 @@ export default {
       isEndpointAllowed,
       async (
         _,
-        { input }: { input: AddForwardUrlInput },
+        { input }: { input: DeleteForwardUrlInput },
         { me }: { me: User },
       ) => {
         const affectedRows = await deleteForwardUrls(

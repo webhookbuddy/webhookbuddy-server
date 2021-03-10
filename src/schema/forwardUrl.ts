@@ -8,7 +8,7 @@ export default gql`
   extend type Mutation {
     addForwardUrl(input: AddForwardUrlInput!): AddForwardUrlPayload!
     deleteForwardUrls(
-      input: AddForwardUrlInput!
+      input: DeleteForwardUrlInput!
     ): DeleteForwardUrlPayload!
   }
 
@@ -20,6 +20,11 @@ export default gql`
   }
 
   input AddForwardUrlInput {
+    endpointId: ID!
+    url: String!
+  }
+
+  input DeleteForwardUrlInput {
     endpointId: ID!
     url: String!
   }

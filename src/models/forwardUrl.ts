@@ -96,12 +96,7 @@ export const deleteForwardUrls = async (
     AND
     f.url = $2
     AND
-    EXISTS (
-      SELECT 1
-      FROM endpoints as e
-      INNER JOIN user_endpoints as ue on ue.endpoint_id = e.id
-      WHERE e.id = f.endpoint_id AND ue.user_id = $3
-    )`,
+    f.user_id = $3`,
     [endpointId, forwardUrl, userId],
   );
   return rowCount;
